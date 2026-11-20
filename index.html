@@ -23,7 +23,7 @@
     <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
       <div>
         <h1 class="text-xl font-bold tracking-tight text-emerald-400">OrçaFácil <span class="text-white">Pro</span></h1>
-        <p class="text-xs text-slate-400">Calcule sua margem real, gere QR Code Pix e feche pelo WhatsApp</p>
+        <p class="text-xs text-slate-400">Precifique com segurança e gere propostas profissionais em PDF</p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <button onclick="abrirHistorico()" id="btn-historico" class="hidden bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 text-xs px-3 py-2 rounded-lg transition">Meus Orçamentos Salvos</button>
@@ -61,10 +61,10 @@
     <!-- Coluna Esquerda -->
     <section id="coluna-controles" class="lg:col-span-5 space-y-6 no-print">
       
-      <!-- 1. Identificação + Pix -->
+      <!-- 1. Identificação -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex justify-between items-center border-b pb-2">
-          <h2 class="font-bold text-slate-700">1. Identificação e Recebimento</h2>
+          <h2 class="font-bold text-slate-700">1. Identificação</h2>
           <span class="text-[11px] text-emerald-600 font-medium">Salvo automaticamente</span>
         </div>
         <div class="bg-slate-50 p-3 rounded-lg border border-dashed border-slate-300">
@@ -75,6 +75,7 @@
           <input type="file" id="in-logo" accept="image/*" onchange="carregarLogo(event)" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700 cursor-pointer">
           <button id="btn-remover-logo" onclick="removerLogo()" class="hidden text-[11px] text-red-500 underline mt-1">Remover logotipo</button>
         </div>
+
         <div class="grid grid-cols-1 gap-3">
           <div>
             <div class="flex justify-between items-center mb-1">
@@ -91,89 +92,177 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Sua Empresa / Nome Profissional</label>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Empresa / Nome Profissional</label>
               <input type="text" id="in-empresa" oninput="salvarEAtualizar()" placeholder="Ex: Silva Climatização" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Seu WhatsApp / Contato</label>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">WhatsApp / Contato</label>
               <input type="text" id="in-contato" inputmode="numeric" oninput="maskTel(this)" onkeyup="maskTel(this)" placeholder="(00) 00000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
             </div>
           </div>
 
-          <!-- Chave Pix Automática -->
-          <div class="bg-emerald-50/70 p-3 rounded-lg border border-emerald-200 grid grid-cols-3 gap-2">
-            <div class="col-span-2">
-              <label class="block text-xs font-semibold text-emerald-900 mb-1">Sua Chave Pix (Gera QR Code)</label>
-              <input type="text" id="in-pix" oninput="salvarERenderizar()" placeholder="CPF, CNPJ, Celular ou E-mail" class="w-full border border-emerald-300 bg-white rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-600">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-emerald-900 mb-1">% Entrada Pix</label>
-              <select id="in-pix-pct" onchange="salvarERenderizar()" class="w-full border border-emerald-300 bg-white rounded-lg px-2 py-1.5 text-xs focus:outline-none">
-                <option value="50">50% Sinal</option>
-                <option value="100">100% Total</option>
-                <option value="30">30% Sinal</option>
-                <option value="40">40% Sinal</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-3">
-            <div class="col-span-2">
+          <div class="grid grid-cols-12 gap-3">
+            <div class="col-span-7">
               <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Cliente</label>
               <input type="text" id="in-cliente" oninput="atualizarPreview()" placeholder="Ex: Construtora Horizonte" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Nº Orçamento</label>
-              <input type="text" id="in-num" value="#001" oninput="atualizarPreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-center font-mono">
+            <div class="col-span-5">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Nº / Ano Orçamento</label>
+              <input type="text" id="in-num" value="#0001/2026" oninput="atualizarPreview()" class="w-full border border-slate-300 rounded-lg px-2 py-2 text-sm text-center font-mono">
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 2. Precificação -->
+      <!-- 2. Modo de Precificação (2 Opções Exclusivas) -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex justify-between items-center border-b pb-2">
-          <h2 class="font-bold text-slate-700">2. Precificação Inteligente</h2>
-          <span class="text-[11px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-medium">Invisível no PDF</span>
+          <h2 class="font-bold text-slate-700">2. Modo de Precificação</h2>
+          <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">Escolha 1 opção</span>
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Margem de Lucro (%)</label>
-            <input type="number" id="in-margem" value="30" min="0" max="500" oninput="salvarERenderizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-emerald-700">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Impostos / Taxas (%)</label>
-            <input type="number" id="in-imposto" value="6" min="0" max="100" oninput="salvarERenderizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          </div>
+
+        <!-- Seletor Exclusivo -->
+        <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl">
+          <button type="button" id="btn-modo-direto" onclick="definirModoPreco('direto')" class="py-2 px-3 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm">
+            Já sei o preço final
+          </button>
+          <button type="button" id="btn-modo-calculadora" onclick="definirModoPreco('calculadora')" class="py-2 px-3 rounded-lg text-xs font-semibold transition text-slate-500 hover:text-slate-800">
+            Calcular minha margem
+          </button>
         </div>
-        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-between text-xs">
-          <div><span class="text-slate-500 block">Custo Base Total:</span><strong id="res-custo" class="text-slate-700 text-sm">R$ 0,00</strong></div>
-          <div class="text-right"><span class="text-slate-500 block">Lucro Líquido Estimado:</span><strong id="res-lucro" class="text-emerald-600 text-sm">R$ 0,00</strong></div>
+
+        <!-- Descrição do Modo Direto -->
+        <div id="painel-modo-direto" class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs text-slate-600">
+          Você informa diretamente o <strong>preço final de venda</strong> de cada item ou serviço na seção abaixo.
+        </div>
+
+        <!-- Painel da Calculadora de Margem Oculta -->
+        <div id="painel-modo-calculadora" class="hidden space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-[11px] text-slate-500">Informe seu custo nos itens e o sistema calcula a venda:</span>
+            <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold uppercase">Invisível no PDF</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Margem de Lucro (%)</label>
+              <input type="number" id="in-margem" value="30" min="0" max="500" oninput="salvarERenderizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-emerald-700">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Impostos / Taxas (%)</label>
+              <input type="number" id="in-imposto" value="6" min="0" max="100" oninput="salvarERenderizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-between text-xs">
+            <div><span class="text-slate-500 block">Custo Base Total:</span><strong id="res-custo" class="text-slate-700 text-sm">R$ 0,00</strong></div>
+            <div class="text-right"><span class="text-slate-500 block">Lucro Líquido Estimado:</span><strong id="res-lucro" class="text-emerald-600 text-sm">R$ 0,00</strong></div>
+          </div>
         </div>
       </div>
 
-      <!-- 3. Itens e Serviços -->
+      <!-- 3. Itens e Serviços (Com Edição) -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <h2 class="font-bold text-slate-700 border-b pb-2">3. Itens e Serviços</h2>
+        <div class="flex justify-between items-center border-b pb-2">
+          <h2 class="font-bold text-slate-700">3. Itens e Serviços</h2>
+          <span id="badge-editando" class="hidden text-[11px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">Editando item</span>
+        </div>
         <div class="space-y-3">
           <input type="text" id="item-desc" placeholder="Descrição do serviço ou material" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
           <div class="grid grid-cols-2 gap-3">
-            <div><label class="block text-xs text-slate-500 mb-1">Quantidade</label><input type="number" id="item-qtd" value="1" min="1" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
-            <div><label class="block text-xs text-slate-500 mb-1">Seu Custo Unitário (R$)</label><input type="text" id="item-custo" inputmode="numeric" oninput="maskMoeda(this)" onkeyup="maskMoeda(this)" placeholder="R$ 0,00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-slate-800"></div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">Quantidade</label>
+              <input type="number" id="item-qtd" value="1" min="1" step="any" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label id="label-valor-item" class="block text-xs text-slate-500 mb-1">Preço Unitário de Venda (R$)</label>
+              <input type="text" id="item-custo" inputmode="numeric" oninput="maskMoeda(this)" onkeyup="maskMoeda(this)" placeholder="R$ 0,00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-slate-800">
+            </div>
           </div>
-          <button onclick="adicionarItem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium text-sm py-2.5 rounded-lg transition">+ Adicionar Item ao Orçamento</button>
+          <div class="flex gap-2">
+            <button type="button" id="btn-salvar-item" onclick="adicionarOuAtualizarItem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium text-sm py-2.5 rounded-lg transition">
+              + Adicionar Item ao Orçamento
+            </button>
+            <button type="button" id="btn-cancelar-edicao" onclick="cancelarEdicaoItem()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium text-xs px-4 py-2.5 rounded-lg transition">
+              Cancelar
+            </button>
+          </div>
         </div>
-        <div id="lista-controle" class="divide-y divide-slate-100 text-xs max-h-48 overflow-y-auto"></div>
+        <div id="lista-controle" class="divide-y divide-slate-100 text-xs max-h-56 overflow-y-auto"></div>
       </div>
 
-      <!-- 4. Condições e Envio -->
+      <!-- 4. Condições, Dados de Pagamento e Envio -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <h2 class="font-bold text-slate-700 border-b pb-2">4. Condições e Envio Rápido</h2>
+        <h2 class="font-bold text-slate-700 border-b pb-2">4. Recebimento, Condições e Envio</h2>
+        
         <div class="grid grid-cols-2 gap-3">
-          <div><label class="block text-xs font-semibold text-slate-600 mb-1">Validade da Proposta</label><input type="text" id="in-validade" value="7 dias corridos" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
-          <div><label class="block text-xs font-semibold text-slate-600 mb-1">Forma de Pagamento</label><input type="text" id="in-pagamento" value="50% entrada + 50% entrega" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Validade da Proposta</label>
+            <input type="text" id="in-validade" value="7 dias corridos" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Condição Comercial</label>
+            <input type="text" id="in-pagamento" value="50% entrada + 50% entrega" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
         </div>
-        <div><label class="block text-xs font-semibold text-slate-600 mb-1">Observações / Garantia</label><textarea id="in-obs" rows="2" oninput="salvarEAtualizar()" placeholder="Ex: Garantia de 90 dias sobre os serviços executados." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea></div>
+
+        <!-- Seção de Dados Bancários / Chave Pix -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+          <span class="text-xs font-bold text-slate-700 block">Dados para Recebimento (Exibido na Proposta)</span>
+          
+          <div>
+            <label class="block text-xs text-slate-600 mb-1">Meio de Pagamento</label>
+            <select id="in-meio-pag" onchange="alternarCamposPagamento()" class="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none">
+              <option value="pix">Pix</option>
+              <option value="transferencia">Transferência Bancária (TED / DOC)</option>
+              <option value="entre_contas">Transferência Entre Contas (Mesmo Banco)</option>
+              <option value="nenhum">Não exibir dados bancários no PDF</option>
+            </select>
+          </div>
+
+          <!-- Campos Específicos para Pix -->
+          <div id="campos-pix" class="grid grid-cols-12 gap-2">
+            <div class="col-span-5">
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tipo de Chave</label>
+              <select id="in-pix-tipo" onchange="salvarEAtualizar()" class="w-full border border-slate-300 bg-white rounded-lg px-2 py-2 text-xs">
+                <option value="CPF">CPF</option>
+                <option value="CNPJ">CNPJ</option>
+                <option value="Celular">Celular</option>
+                <option value="E-mail">E-mail</option>
+                <option value="Chave Aleatória">Chave Aleatória</option>
+              </select>
+            </div>
+            <div class="col-span-7">
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Chave Pix</label>
+              <input type="text" id="in-pix-chave" oninput="salvarEAtualizar()" placeholder="Digite sua chave Pix" class="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-xs">
+            </div>
+          </div>
+
+          <!-- Campos Específicos para Conta Bancária -->
+          <div id="campos-banco" class="hidden space-y-2">
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Banco</label>
+                <input type="text" id="in-banco-nome" oninput="salvarEAtualizar()" placeholder="Ex: Nubank / Itaú" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Agência</label>
+                <input type="text" id="in-banco-ag" oninput="salvarEAtualizar()" placeholder="0001" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Conta</label>
+                <input type="text" id="in-banco-cc" oninput="salvarEAtualizar()" placeholder="12345-6" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
+              </div>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Titular / Favorecido</label>
+              <input type="text" id="in-banco-titular" oninput="salvarEAtualizar()" placeholder="Nome completo ou Razão Social" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Observações / Garantia</label>
+          <textarea id="in-obs" rows="2" oninput="salvarEAtualizar()" placeholder="Ex: Garantia de 90 dias sobre os serviços executados." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea>
+        </div>
         
         <div class="space-y-2.5 pt-1">
           <div class="grid grid-cols-2 gap-2.5">
@@ -186,6 +275,7 @@
           </div>
           <button onclick="enviarWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2">
             <span>Enviar Proposta no WhatsApp</span>
+            <span id="badge-wpp-pro" class="bg-emerald-800 text-emerald-100 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">PRO</span>
           </button>
           <button onclick="copiarLinkAprovacao()" id="btn-link-aprovacao" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-semibold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1.5">
             <span>🔗 Copiar Link de Aprovação Online</span>
@@ -217,7 +307,7 @@
         </div>
 
         <div class="relative z-10">
-          <!-- Selo de Aprovado Online (quando o cliente aprova) -->
+          <!-- Selo de Aprovado Online -->
           <div id="selo-aprovado-online" class="hidden mb-6 bg-emerald-50 border-2 border-emerald-500 rounded-xl p-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
               <span class="bg-emerald-600 text-white text-xs font-black px-2.5 py-1 rounded uppercase">✓ Aprovado Online</span>
@@ -235,7 +325,7 @@
               </div>
             </div>
             <div class="text-right shrink-0">
-              <span class="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">Proposta <span id="out-num">#001</span></span>
+              <span class="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">Proposta <span id="out-num">#0001/2026</span></span>
               <p class="text-xs text-slate-500 mt-2">Data: <span id="out-data"></span></p>
               <p class="text-xs text-slate-500">Validade: <span id="out-validade">7 dias corridos</span></p>
             </div>
@@ -269,19 +359,21 @@
             </div>
           </div>
 
-          <!-- Condições + Bloco QR Code Pix Automático -->
-          <div class="mt-8 border-t pt-6 grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
-            <div class="sm:col-span-8 space-y-3 text-sm text-slate-700">
-              <div><strong class="text-slate-900">Condições de Pagamento:</strong> <span id="out-pagamento">50% entrada + 50% entrega</span></div>
-              <div id="box-obs" class="hidden"><strong class="text-slate-900">Observações e Garantia:</strong><p id="out-obs" class="text-slate-600 mt-1"></p></div>
+          <!-- Condições e Dados Bancários / Pix -->
+          <div class="mt-8 border-t pt-6 space-y-4 text-sm text-slate-700">
+            <div>
+              <strong class="text-slate-900">Condições de Pagamento:</strong>
+              <span id="out-pagamento">50% entrada + 50% entrega</span>
             </div>
 
-            <!-- Caixa Pix com QR Code -->
-            <div id="box-pix-pdf" class="hidden sm:col-span-4 bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
-              <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 block">Pagamento Rápido Pix</span>
-              <span id="out-pix-valor" class="text-xs font-bold text-slate-800 block mb-1.5">Entrada: R$ 0,00</span>
-              <img id="out-pix-qr" src="" alt="QR Code Pix" class="w-28 h-28 mx-auto bg-white p-1 rounded border border-slate-200">
-              <span id="out-pix-chave" class="text-[10px] text-slate-500 block mt-1.5 break-all"></span>
+            <div id="box-dados-pagamento-pdf" class="hidden bg-slate-50 border border-slate-200 rounded-lg p-3.5 text-xs space-y-1">
+              <strong id="out-titulo-pagamento" class="text-slate-900 uppercase tracking-wider block text-[11px]">Dados para Pagamento via Pix:</strong>
+              <p id="out-detalhe-pagamento" class="text-slate-700 font-medium"></p>
+            </div>
+
+            <div id="box-obs" class="hidden">
+              <strong class="text-slate-900">Observações e Garantia:</strong>
+              <p id="out-obs" class="text-slate-600 mt-1"></p>
             </div>
           </div>
         </div>
@@ -340,7 +432,7 @@
       <ul class="text-sm text-slate-600 space-y-2">
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Adicione o <strong>Logotipo da sua empresa</strong> no topo</li>
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Remova completamente a marca d'água de demonstração</li>
-        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> <strong>Link de Aprovação Online</strong> com aceite digital do cliente</li>
+        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> <strong>Envio direto no WhatsApp</strong> + <strong>Link de Aprovação Online</strong></li>
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Orçamentos ilimitados salvos na sua conta</li>
       </ul>
       <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-sm text-emerald-900">
@@ -355,6 +447,8 @@
   <script>
     let orcamentoSalvoIdAtual = null;
     let propostaPublicaId = null;
+    let modoPreco = 'direto'; // 'direto' ou 'calculadora'
+    let itemEmEdicaoId = null;
 
     function maskTel(el) {
       let n = el.value.replace(/\D/g, '').substring(0, 11);
@@ -381,11 +475,9 @@
       salvarEAtualizar();
     }
 
-    // VALIDAÇÃO MATEMÁTICA OFICIAL DE CNPJ (MÓDULO 11)
     function validarCNPJ(cnpj) {
       cnpj = cnpj.replace(/\D/g, '');
-      if (cnpj.length !== 14) return false;
-      if (/^(\d)\1+$/.test(cnpj)) return false;
+      if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
 
       let tamanho = cnpj.length - 2;
       let numeros = cnpj.substring(0, tamanho);
@@ -397,7 +489,6 @@
         soma += parseInt(numeros.charAt(tamanho - i), 10) * pos--;
         if (pos < 2) pos = 9;
       }
-
       let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
       if (resultado !== parseInt(digitos.charAt(0), 10)) return false;
 
@@ -410,11 +501,8 @@
         soma += parseInt(numeros.charAt(tamanho - i), 10) * pos--;
         if (pos < 2) pos = 9;
       }
-
       resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
-      if (resultado !== parseInt(digitos.charAt(1), 10)) return false;
-
-      return true;
+      return resultado === parseInt(digitos.charAt(1), 10);
     }
 
     async function acaoBuscarCNPJ() {
@@ -472,62 +560,88 @@
       return parseInt(limpo, 10) / 100;
     }
 
-    // GERADOR OFICIAL DE PAYLOAD PIX (PADRÃO EMV BACEN)
-    function gerarPayloadPix(chave, nomeRecebedor, valor) {
-      const formatarCampo = (id, val) => id + String(val.length).padStart(2, '0') + val;
-      const limparTexto = (str, max) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9 ]/g, '').trim().substring(0, max) || 'ORCAFACIL';
-      
-      let chaveTratada = chave.trim();
-      if (/^\(\d{2}\)\s?\d{4,5}-\d{4}$/.test(chaveTratada)) {
-        chaveTratada = '+55' + chaveTratada.replace(/\D/g, '');
+    // MODO DE PRECIFICAÇÃO (DIRETO VS CALCULADORA)
+    function definirModoPreco(modo) {
+      modoPreco = modo;
+      localStorage.setItem('orcafacil_modo_preco', modo);
+
+      const btnDireto = document.getElementById('btn-modo-direto');
+      const btnCalc = document.getElementById('btn-modo-calculadora');
+      const painelDireto = document.getElementById('painel-modo-direto');
+      const painelCalc = document.getElementById('painel-modo-calculadora');
+      const labelValor = document.getElementById('label-valor-item');
+
+      if (modo === 'direto') {
+        btnDireto.className = 'py-2 px-3 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm';
+        btnCalc.className = 'py-2 px-3 rounded-lg text-xs font-semibold transition text-slate-500 hover:text-slate-800';
+        painelDireto.classList.remove('hidden');
+        painelCalc.classList.add('hidden');
+        labelValor.innerText = 'Preço Unitário de Venda (R$)';
+      } else {
+        btnCalc.className = 'py-2 px-3 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm';
+        btnDireto.className = 'py-2 px-3 rounded-lg text-xs font-semibold transition text-slate-500 hover:text-slate-800';
+        painelCalc.classList.remove('hidden');
+        painelDireto.classList.add('hidden');
+        labelValor.innerText = 'Seu Custo Unitário (R$)';
       }
-
-      const gui = formatarCampo('00', 'br.gov.bcb.pix');
-      const key = formatarCampo('01', chaveTratada);
-      const merchantAccount = formatarCampo('26', gui + key);
-      const valorStr = valor > 0 ? formatarCampo('54', valor.toFixed(2)) : '';
-      const nome = limparTexto(nomeRecebedor, 25);
-      const txid = formatarCampo('62', formatarCampo('05', '***'));
-
-      const payloadSemCrc =
-        formatarCampo('00', '01') +
-        merchantAccount +
-        formatarCampo('52', '0000') +
-        formatarCampo('53', '986') +
-        valorStr +
-        formatarCampo('58', 'BR') +
-        formatarCampo('59', nome) +
-        formatarCampo('60', 'BRASIL') +
-        txid +
-        '6304';
-
-      let crc = 0xFFFF;
-      for (let i = 0; i < payloadSemCrc.length; i++) {
-        crc ^= payloadSemCrc.charCodeAt(i) << 8;
-        for (let j = 0; j < 8; j++) {
-          crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
-        }
-      }
-      const crcHex = (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
-      return payloadSemCrc + crcHex;
+      renderizarItens();
     }
 
-    function atualizarBlocoPix(totalVenda) {
-      const chave = document.getElementById('in-pix').value.trim();
-      const boxPix = document.getElementById('box-pix-pdf');
-      if (!chave || totalVenda <= 0) {
+    // ALTERNAR CAMPOS DE PAGAMENTO (PIX VS BANCO)
+    function alternarCamposPagamento() {
+      const meio = document.getElementById('in-meio-pag').value;
+      const boxPix = document.getElementById('campos-pix');
+      const boxBanco = document.getElementById('campos-banco');
+
+      if (meio === 'pix') {
+        boxPix.classList.remove('hidden');
+        boxBanco.classList.add('hidden');
+      } else if (meio === 'transferencia' || meio === 'entre_contas') {
         boxPix.classList.add('hidden');
-        return;
+        boxBanco.classList.remove('hidden');
+      } else {
+        boxPix.classList.add('hidden');
+        boxBanco.classList.add('hidden');
       }
-      const pct = parseFloat(document.getElementById('in-pix-pct').value) || 50;
-      const valorEntrada = totalVenda * (pct / 100);
-      const empresa = document.getElementById('in-empresa').value || 'Prestador';
-      const payload = gerarPayloadPix(chave, empresa, valorEntrada);
-      
-      document.getElementById('out-pix-valor').innerText = `Entrada (${pct}%): ${formatarMoeda(valorEntrada)}`;
-      document.getElementById('out-pix-chave').innerText = `Chave: ${chave}`;
-      document.getElementById('out-pix-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(payload)}`;
-      boxPix.classList.remove('hidden');
+      salvarEAtualizar();
+    }
+
+    function atualizarDadosPagamentoNoPDF() {
+      const meio = document.getElementById('in-meio-pag').value;
+      const boxPdf = document.getElementById('box-dados-pagamento-pdf');
+      const tituloPdf = document.getElementById('out-titulo-pagamento');
+      const detalhePdf = document.getElementById('out-detalhe-pagamento');
+
+      if (meio === 'pix') {
+        const tipo = document.getElementById('in-pix-tipo').value;
+        const chave = document.getElementById('in-pix-chave').value.trim();
+        if (!chave) {
+          boxPdf.classList.add('hidden');
+          return;
+        }
+        tituloPdf.innerText = 'Dados para Pagamento via Pix:';
+        detalhePdf.innerText = `Chave (${tipo}): ${chave}`;
+        boxPdf.classList.remove('hidden');
+      } else if (meio === 'transferencia' || meio === 'entre_contas') {
+        const banco = document.getElementById('in-banco-nome').value.trim();
+        const ag = document.getElementById('in-banco-ag').value.trim();
+        const cc = document.getElementById('in-banco-cc').value.trim();
+        const titular = document.getElementById('in-banco-titular').value.trim();
+        if (!banco && !ag && !cc && !titular) {
+          boxPdf.classList.add('hidden');
+          return;
+        }
+        tituloPdf.innerText = meio === 'transferencia' ? 'Dados para Transferência (TED / DOC):' : 'Dados para Transferência Entre Contas:';
+        let partes = [];
+        if (banco) partes.push(`Banco: ${banco}`);
+        if (ag) partes.push(`Agência: ${ag}`);
+        if (cc) partes.push(`Conta: ${cc}`);
+        if (titular) partes.push(`Favorecido: ${titular}`);
+        detalhePdf.innerText = partes.join(' • ');
+        boxPdf.classList.remove('hidden');
+      } else {
+        boxPdf.classList.add('hidden');
+      }
     }
 
     const SUPABASE_URL = 'https://qnswdcfjracnvwzpyuqd.supabase.co';
@@ -538,7 +652,9 @@
     let currentUser = null, isPro = false, ultimoNumeroSalvo = 0, itens = [], totalAtual = 0;
 
     window.onload = async function() {
+      const anoAtual = new Date().getFullYear();
       document.getElementById('out-data').innerText = new Date().toLocaleDateString('pt-BR');
+      document.getElementById('in-num').value = `#0001/${anoAtual}`;
       
       const params = new URLSearchParams(window.location.search);
       const idPropostaUrl = params.get('proposta');
@@ -553,6 +669,17 @@
       if (session) await configurarUsuarioLogado(session.user);
       sb.auth.onAuthStateChange(async (_e, s) => s ? await configurarUsuarioLogado(s.user) : configurarUsuarioDeslogado());
     };
+
+    function formatarNumeroSequencial(num, anoPersonalizado = null) {
+      const ano = anoPersonalizado || new Date().getFullYear();
+      return '#' + String(num).padStart(4, '0') + '/' + ano;
+    }
+
+    function extrairAnoDoCampoNumero() {
+      const val = document.getElementById('in-num').value;
+      const match = val.match(/\/(\d{4})/);
+      return match ? match[1] : String(new Date().getFullYear());
+    }
 
     async function carregarModoPublicoCliente(id) {
       propostaPublicaId = id;
@@ -571,18 +698,24 @@
       }
 
       const d = orc.dados_json;
+      modoPreco = d.modoPreco || 'calculadora';
       document.getElementById('in-empresa').value = d.empresa || '';
       document.getElementById('in-contato').value = d.contato || '';
       document.getElementById('in-doc').value = d.doc || '';
       document.getElementById('in-cliente').value = d.cliente || '';
-      document.getElementById('in-num').value = d.numero || '#001';
+      document.getElementById('in-num').value = d.numero || '#0001/2026';
       document.getElementById('in-margem').value = d.margem || 30;
       document.getElementById('in-imposto').value = d.imposto || 6;
       document.getElementById('in-validade').value = d.validade || '';
       document.getElementById('in-pagamento').value = d.pagamento || '';
       document.getElementById('in-obs').value = d.obs || '';
-      document.getElementById('in-pix').value = d.pix || '';
-      document.getElementById('in-pix-pct').value = d.pixPct || '50';
+      document.getElementById('in-meio-pag').value = d.meioPag || 'pix';
+      document.getElementById('in-pix-tipo').value = d.pixTipo || 'CPF';
+      document.getElementById('in-pix-chave').value = d.pixChave || '';
+      document.getElementById('in-banco-nome').value = d.bancoNome || '';
+      document.getElementById('in-banco-ag').value = d.bancoAg || '';
+      document.getElementById('in-banco-cc').value = d.bancoCc || '';
+      document.getElementById('in-banco-titular').value = d.bancoTitular || '';
       document.getElementById('out-data').innerText = new Date(orc.created_at).toLocaleDateString('pt-BR');
       itens = d.itens || [];
 
@@ -614,8 +747,6 @@
       document.getElementById('texto-aprovado-detalhes').innerText = `Aceite digital registrado em ${dataFormatada}`;
     }
 
-    function formatarNumeroSequencial(num) { return '#' + String(num).padStart(3, '0'); }
-
     async function configurarUsuarioLogado(user) {
       currentUser = user;
       document.getElementById('area-deslogado').classList.add('hidden');
@@ -625,7 +756,8 @@
       const { data: profile } = await sb.from('profiles').select('is_pro, ultimo_numero').eq('id', user.id).single();
       if (profile) {
         ultimoNumeroSalvo = profile.ultimo_numero || 0;
-        document.getElementById('in-num').value = formatarNumeroSequencial(ultimoNumeroSalvo + 1);
+        const anoAtual = extrairAnoDoCampoNumero();
+        document.getElementById('in-num').value = formatarNumeroSequencial(ultimoNumeroSalvo + 1, anoAtual);
         atualizarPreview();
         isPro = !!profile.is_pro;
         if (isPro) aplicarModoPro();
@@ -667,26 +799,45 @@
         return null;
       }
       const cliente = document.getElementById('in-cliente').value.trim() || 'Cliente sem nome';
-      const numero = document.getElementById('in-num').value || formatarNumeroSequencial(ultimoNumeroSalvo + 1);
+      const anoAtual = extrairAnoDoCampoNumero();
+      const numero = document.getElementById('in-num').value || formatarNumeroSequencial(ultimoNumeroSalvo + 1, anoAtual);
+      
       const pacoteDados = {
-        empresa: document.getElementById('in-empresa').value, contato: document.getElementById('in-contato').value,
-        doc: document.getElementById('in-doc').value, pix: document.getElementById('in-pix').value,
-        pixPct: document.getElementById('in-pix-pct').value, cliente, numero,
-        margem: document.getElementById('in-margem').value, imposto: document.getElementById('in-imposto').value,
-        validade: document.getElementById('in-validade').value, pagamento: document.getElementById('in-pagamento').value,
-        obs: document.getElementById('in-obs').value, itens
+        modoPreco,
+        empresa: document.getElementById('in-empresa').value,
+        contato: document.getElementById('in-contato').value,
+        doc: document.getElementById('in-doc').value,
+        cliente,
+        numero,
+        margem: document.getElementById('in-margem').value,
+        imposto: document.getElementById('in-imposto').value,
+        validade: document.getElementById('in-validade').value,
+        pagamento: document.getElementById('in-pagamento').value,
+        meioPag: document.getElementById('in-meio-pag').value,
+        pixTipo: document.getElementById('in-pix-tipo').value,
+        pixChave: document.getElementById('in-pix-chave').value,
+        bancoNome: document.getElementById('in-banco-nome').value,
+        bancoAg: document.getElementById('in-banco-ag').value,
+        bancoCc: document.getElementById('in-banco-cc').value,
+        bancoTitular: document.getElementById('in-banco-titular').value,
+        obs: document.getElementById('in-obs').value,
+        itens
       };
+
       const { data, error } = await sb.from('orcamentos').insert([{ user_id: currentUser.id, numero, cliente, valor_total: totalAtual, dados_json: pacoteDados }]).select().single();
       if (error) {
         alert('Erro ao salvar: ' + error.message);
         return null;
       }
       orcamentoSalvoIdAtual = data.id;
-      const numExtraido = parseInt(numero.replace(/\D/g, ''), 10);
+
+      // Extrai apenas a parte antes da barra (ex: #0001/2026 -> 1)
+      const parteNumero = numero.split('/')[0];
+      const numExtraido = parseInt(parteNumero.replace(/\D/g, ''), 10);
       if (!isNaN(numExtraido) && numExtraido > ultimoNumeroSalvo) {
         ultimoNumeroSalvo = numExtraido;
         await sb.from('profiles').update({ ultimo_numero: ultimoNumeroSalvo }).eq('id', currentUser.id);
-        document.getElementById('in-num').value = formatarNumeroSequencial(ultimoNumeroSalvo + 1);
+        document.getElementById('in-num').value = formatarNumeroSequencial(ultimoNumeroSalvo + 1, anoAtual);
         atualizarPreview();
       }
       if (!silencioso) {
@@ -713,22 +864,21 @@
     }
 
     function enviarWhatsApp() {
+      if (!isPro) return abrirModalPro();
+
       const cliente = document.getElementById('in-cliente').value.trim() || 'Cliente';
       const empresa = document.getElementById('in-empresa').value.trim() || 'nossa equipe';
-      const num = document.getElementById('in-num').value || '#001';
+      const num = document.getElementById('in-num').value || '#0001/2026';
       const validade = document.getElementById('in-validade').value || '7 dias';
       const pagamento = document.getElementById('in-pagamento').value || 'A combinar';
 
       if (itens.length === 0) return alert('Adicione pelo menos um item antes de enviar pelo WhatsApp.');
 
-      const margem = parseFloat(document.getElementById('in-margem').value) || 0;
-      const imposto = parseFloat(document.getElementById('in-imposto').value) || 0;
-      const fator = 1 + (margem / 100) + (imposto / 100);
-
+      const fator = obterFatorMultiplicador();
       let resumoItens = itens.map(i => `• ${i.qtd}x ${i.desc} — ${formatarMoeda(i.custo * fator * i.qtd)}`).join('\n');
       let texto = `Olá, *${cliente}*! Tudo bem?\n\nSegue o resumo da *Proposta ${num}* preparada por *${empresa}*:\n\n${resumoItens}\n\n*Investimento Total:* ${formatarMoeda(totalAtual)}\n*Condições:* ${pagamento}\n*Validade:* ${validade}`;
 
-      if (isPro && orcamentoSalvoIdAtual) {
+      if (orcamentoSalvoIdAtual) {
         const urlBase = window.location.origin + window.location.pathname;
         texto += `\n\n✅ *Para visualizar e aprovar online com 1 clique, acesse:*\n${urlBase}?proposta=${orcamentoSalvoIdAtual}`;
       }
@@ -770,20 +920,29 @@
     function carregarOrcamentoSalvo(dados, idOrc = null, statusOrc = 'Pendente', aprovadoEm = '') {
       if (!dados) return;
       orcamentoSalvoIdAtual = idOrc;
+      cancelarEdicaoItem();
+      if (dados.modoPreco) definirModoPreco(dados.modoPreco);
+
       document.getElementById('in-empresa').value = dados.empresa || '';
       const elTel = document.getElementById('in-contato'); elTel.value = dados.contato || ''; maskTel(elTel);
-      const elDoc = document.getElementById('in-doc');
-      elDoc.value = dados.doc || ''; maskDoc(elDoc);
-      document.getElementById('in-pix').value = dados.pix || '';
-      document.getElementById('in-pix-pct').value = dados.pixPct || '50';
+      const elDoc = document.getElementById('in-doc'); elDoc.value = dados.doc || ''; maskDoc(elDoc);
       document.getElementById('in-cliente').value = dados.cliente || '';
-      document.getElementById('in-num').value = dados.numero || '#001';
+      document.getElementById('in-num').value = dados.numero || '#0001/2026';
       document.getElementById('in-margem').value = dados.margem || 30;
       document.getElementById('in-imposto').value = dados.imposto || 6;
       document.getElementById('in-validade').value = dados.validade || '';
       document.getElementById('in-pagamento').value = dados.pagamento || '';
+      document.getElementById('in-meio-pag').value = dados.meioPag || 'pix';
+      document.getElementById('in-pix-tipo').value = dados.pixTipo || 'CPF';
+      document.getElementById('in-pix-chave').value = dados.pixChave || '';
+      document.getElementById('in-banco-nome').value = dados.bancoNome || '';
+      document.getElementById('in-banco-ag').value = dados.bancoAg || '';
+      document.getElementById('in-banco-cc').value = dados.bancoCc || '';
+      document.getElementById('in-banco-titular').value = dados.bancoTitular || '';
       document.getElementById('in-obs').value = dados.obs || '';
       itens = dados.itens || [];
+
+      alternarCamposPagamento();
 
       if (statusOrc === 'Aprovado') {
         exibirEstadoAprovado(aprovadoEm);
@@ -797,7 +956,15 @@
     function fecharHistorico() { document.getElementById('modal-historico').classList.replace('flex', 'hidden'); }
 
     function carregarRascunhoLocal() {
-      ['in-empresa', 'in-contato', 'in-doc', 'in-pix', 'in-pix-pct', 'in-margem', 'in-imposto', 'in-validade', 'in-pagamento', 'in-obs'].forEach(id => {
+      const modoSalvo = localStorage.getItem('orcafacil_modo_preco') || 'direto';
+      definirModoPreco(modoSalvo);
+
+      const ids = [
+        'in-empresa', 'in-contato', 'in-doc', 'in-margem', 'in-imposto',
+        'in-validade', 'in-pagamento', 'in-meio-pag', 'in-pix-tipo', 'in-pix-chave',
+        'in-banco-nome', 'in-banco-ag', 'in-banco-cc', 'in-banco-titular', 'in-obs'
+      ];
+      ids.forEach(id => {
         const salvo = localStorage.getItem('orcafacil_' + id);
         if (salvo !== null) {
           const el = document.getElementById(id);
@@ -806,21 +973,25 @@
           if (id === 'in-doc') maskDoc(el);
         }
       });
+      alternarCamposPagamento();
       atualizarPreview();
     }
 
     function formatarMoeda(valor) { return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 
     function salvarEAtualizar() {
-      ['in-empresa', 'in-contato', 'in-doc', 'in-validade', 'in-pagamento', 'in-obs'].forEach(id => localStorage.setItem('orcafacil_' + id, document.getElementById(id).value));
+      const ids = [
+        'in-empresa', 'in-contato', 'in-doc', 'in-validade', 'in-pagamento',
+        'in-meio-pag', 'in-pix-tipo', 'in-pix-chave', 'in-banco-nome',
+        'in-banco-ag', 'in-banco-cc', 'in-banco-titular', 'in-obs'
+      ];
+      ids.forEach(id => localStorage.setItem('orcafacil_' + id, document.getElementById(id).value));
       atualizarPreview();
     }
 
     function salvarERenderizar() {
       localStorage.setItem('orcafacil_in-margem', document.getElementById('in-margem').value);
       localStorage.setItem('orcafacil_in-imposto', document.getElementById('in-imposto').value);
-      localStorage.setItem('orcafacil_in-pix', document.getElementById('in-pix').value);
-      localStorage.setItem('orcafacil_in-pix-pct', document.getElementById('in-pix-pct').value);
       renderizarItens();
     }
 
@@ -851,60 +1022,141 @@
       const doc = document.getElementById('in-doc').value;
       document.getElementById('out-doc').innerText = doc ? `Documento: ${doc}` : '';
       document.getElementById('out-cliente').innerText = document.getElementById('in-cliente').value || 'Nome do Cliente';
-      document.getElementById('out-num').innerText = document.getElementById('in-num').value || '#001';
+      document.getElementById('out-num').innerText = document.getElementById('in-num').value || '#0001/2026';
       document.getElementById('out-validade').innerText = document.getElementById('in-validade').value || '7 dias corridos';
       document.getElementById('out-pagamento').innerText = document.getElementById('in-pagamento').value || 'A combinar';
+      
+      atualizarDadosPagamentoNoPDF();
+
       const obs = document.getElementById('in-obs').value, boxObs = document.getElementById('box-obs');
       if (obs.trim()) { boxObs.classList.remove('hidden'); document.getElementById('out-obs').innerText = obs; }
       else boxObs.classList.add('hidden');
-      atualizarBlocoPix(totalAtual);
     }
 
-    function adicionarItem() {
+    // ADICIONAR OU EDITAR ITEM
+    function adicionarOuAtualizarItem() {
       const desc = document.getElementById('item-desc').value.trim();
       const qtd = parseFloat(document.getElementById('item-qtd').value) || 1;
-      const custo = lerValorMoeda(document.getElementById('item-custo').value);
-      if (!desc || custo <= 0) return alert('Preencha a descrição e um custo válido maior que zero.');
+      const valorDigitado = lerValorMoeda(document.getElementById('item-custo').value);
+
+      if (!desc || valorDigitado <= 0 || qtd <= 0) {
+        return alert('Preencha a descrição, uma quantidade e um valor válido maior que zero.');
+      }
+
       orcamentoSalvoIdAtual = null;
-      itens.push({ id: Date.now(), desc, qtd, custo });
-      document.getElementById('item-desc').value = '';
-      document.getElementById('item-custo').value = '';
+
+      if (itemEmEdicaoId !== null) {
+        const index = itens.findIndex(i => i.id === itemEmEdicaoId);
+        if (index !== -1) {
+          itens[index] = { id: itemEmEdicaoId, desc, qtd, custo: valorDigitado };
+        }
+        cancelarEdicaoItem();
+      } else {
+        itens.push({ id: Date.now(), desc, qtd, custo: valorDigitado });
+        document.getElementById('item-desc').value = '';
+        document.getElementById('item-qtd').value = '1';
+        document.getElementById('item-custo').value = '';
+      }
       renderizarItens();
     }
 
+    function iniciarEdicaoItem(id) {
+      const item = itens.find(i => i.id === id);
+      if (!item) return;
+
+      itemEmEdicaoId = id;
+      document.getElementById('item-desc').value = item.desc;
+      document.getElementById('item-qtd').value = item.qtd;
+      const elValor = document.getElementById('item-custo');
+      elValor.value = formatarMoeda(item.custo);
+
+      document.getElementById('badge-editando').classList.remove('hidden');
+      document.getElementById('btn-salvar-item').innerText = 'Salvar Alterações do Item';
+      document.getElementById('btn-salvar-item').classList.replace('bg-slate-800', 'bg-emerald-600');
+      document.getElementById('btn-salvar-item').classList.replace('hover:bg-slate-900', 'hover:bg-emerald-700');
+      document.getElementById('btn-cancelar-edicao').classList.remove('hidden');
+      document.getElementById('item-desc').focus();
+    }
+
+    function cancelarEdicaoItem() {
+      itemEmEdicaoId = null;
+      document.getElementById('item-desc').value = '';
+      document.getElementById('item-qtd').value = '1';
+      document.getElementById('item-custo').value = '';
+
+      document.getElementById('badge-editando').classList.add('hidden');
+      document.getElementById('btn-salvar-item').innerText = '+ Adicionar Item ao Orçamento';
+      document.getElementById('btn-salvar-item').classList.replace('bg-emerald-600', 'bg-slate-800');
+      document.getElementById('btn-salvar-item').classList.replace('hover:bg-emerald-700', 'hover:bg-slate-900');
+      document.getElementById('btn-cancelar-edicao').classList.add('hidden');
+    }
+
     function removerItem(id) {
+      if (itemEmEdicaoId === id) cancelarEdicaoItem();
       orcamentoSalvoIdAtual = null;
       itens = itens.filter(i => i.id !== id);
       renderizarItens();
     }
 
+    function obterFatorMultiplicador() {
+      if (modoPreco === 'direto') return 1;
+      const margem = parseFloat(document.getElementById('in-margem').value) || 0;
+      const imposto = parseFloat(document.getElementById('in-imposto').value) || 0;
+      return 1 + (margem / 100) + (imposto / 100);
+    }
+
     function renderizarItens() {
-      const margem = parseFloat(document.getElementById('in-margem').value) || 0, imposto = parseFloat(document.getElementById('in-imposto').value) || 0;
-      const fator = 1 + (margem / 100) + (imposto / 100);
+      const fator = obterFatorMultiplicador();
+      const imposto = parseFloat(document.getElementById('in-imposto').value) || 0;
       const tbody = document.getElementById('tabela-pdf'), listaControle = document.getElementById('lista-controle');
+      
       if (itens.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-slate-400 italic">Adicione itens ao lado para visualizar o orçamento...</td></tr>';
         listaControle.innerHTML = ''; totalAtual = 0;
         document.getElementById('out-total').innerText = 'R$ 0,00';
         document.getElementById('res-custo').innerText = 'R$ 0,00';
         document.getElementById('res-lucro').innerText = 'R$ 0,00';
-        atualizarBlocoPix(0);
         return;
       }
+
       let htmlPdf = '', htmlControle = '', custoTotal = 0, vendaTotal = 0;
       itens.forEach(item => {
-        const cItem = item.custo * item.qtd, pUnit = item.custo * fator, sub = pUnit * item.qtd;
-        custoTotal += cItem; vendaTotal += sub;
-        htmlPdf += `<tr><td class="py-3 font-medium text-slate-800">${item.desc}</td><td class="py-3 text-center text-slate-600">${item.qtd}</td><td class="py-3 text-right text-slate-600">${formatarMoeda(pUnit)}</td><td class="py-3 text-right font-semibold text-slate-900">${formatarMoeda(sub)}</td></tr>`;
-        htmlControle += `<div class="py-2 flex justify-between items-center"><div><span class="font-medium text-slate-700">${item.qtd}x ${item.desc}</span><span class="text-slate-400 block">Custo: ${formatarMoeda(cItem)} → Venda: ${formatarMoeda(sub)}</span></div><button onclick="removerItem(${item.id})" class="text-red-500 hover:text-red-700 font-bold px-2">Excluir</button></div>`;
+        const cItem = item.custo * item.qtd;
+        const pUnit = item.custo * fator;
+        const sub = pUnit * item.qtd;
+        custoTotal += cItem;
+        vendaTotal += sub;
+
+        htmlPdf += `<tr>
+          <td class="py-3 font-medium text-slate-800">${item.desc}</td>
+          <td class="py-3 text-center text-slate-600">${item.qtd}</td>
+          <td class="py-3 text-right text-slate-600">${formatarMoeda(pUnit)}</td>
+          <td class="py-3 text-right font-semibold text-slate-900">${formatarMoeda(sub)}</td>
+        </tr>`;
+
+        const detalheControle = modoPreco === 'direto'
+          ? `Unit: ${formatarMoeda(pUnit)} • Total: <strong class="text-slate-700">${formatarMoeda(sub)}</strong>`
+          : `Custo: ${formatarMoeda(cItem)} → Venda: <strong class="text-emerald-700">${formatarMoeda(sub)}</strong>`;
+
+        htmlControle += `<div class="py-2.5 flex justify-between items-center gap-2">
+          <div class="min-w-0">
+            <span class="font-semibold text-slate-800 block truncate">${item.qtd}x ${item.desc}</span>
+            <span class="text-slate-500 block">${detalheControle}</span>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="iniciarEdicaoItem(${item.id})" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded">Editar</button>
+            <button type="button" onclick="removerItem(${item.id})" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2.5 py-1 rounded">Excluir</button>
+          </div>
+        </div>`;
       });
+
       const lucro = vendaTotal - custoTotal - (custoTotal * (imposto / 100));
       totalAtual = vendaTotal;
-      tbody.innerHTML = htmlPdf; listaControle.innerHTML = htmlControle;
+      tbody.innerHTML = htmlPdf;
+      listaControle.innerHTML = htmlControle;
       document.getElementById('out-total').innerText = formatarMoeda(vendaTotal);
       document.getElementById('res-custo').innerText = formatarMoeda(custoTotal);
       document.getElementById('res-lucro').innerText = formatarMoeda(lucro);
-      atualizarBlocoPix(vendaTotal);
     }
 
     function gerarPDF() {
@@ -927,9 +1179,12 @@
       document.getElementById('badge-plano').classList.replace('bg-slate-700', 'bg-emerald-900');
       document.getElementById('badge-plano').classList.replace('text-slate-300', 'text-emerald-300');
       document.getElementById('btn-upgrade').classList.add('hidden');
-      document.getElementById('badge-link-pro').innerText = 'Ativo';
+      
+      document.getElementById('badge-wpp-pro').innerText = 'Liberado';
+      document.getElementById('badge-link-pro').innerText = 'Liberado';
       document.getElementById('badge-link-pro').classList.replace('bg-amber-200', 'bg-emerald-200');
       document.getElementById('badge-link-pro').classList.replace('text-amber-900', 'text-emerald-900');
+
       const tagLogo = document.getElementById('tag-logo-pro');
       tagLogo.innerText = 'Liberado';
       tagLogo.classList.replace('bg-amber-100', 'bg-emerald-100');
