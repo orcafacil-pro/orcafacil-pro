@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrçaFácil Pro — Gerador Inteligente de Propostas e Margem</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #area-impressao, #area-impressao * {
+        visibility: visible;
+      }
+      #area-impressao {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans">
+
+  <!-- Barra Superior -->
+  <header class="bg-slate-900 text-white py-4 px-6 shadow-md no-print">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight text-emerald-400">OrçaFácil <span class="text-white">Pro</span></h1>
+        <p class="text-xs text-slate-400">Calcule sua margem real e gere propostas em PDF em segundos</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="badge-plano" class="text-xs bg-slate-700 text-slate-300 px-3 py-1 rounded-full font-medium">Plano Gratuito</span>
+        <button onclick="abrirModalPro()" id="btn-upgrade" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-xs px-4 py-2 rounded-lg transition">
+          Liberar Versão PRO
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Coluna Esquerda: Painel de Controle e Cálculo (Não sai na impressão) -->
+    <section class="lg:col-span-5 space-y-6 no-print">
+      
+      <!-- Dados do Prestador e Cliente -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="font-bold text-slate-700 border-b pb-2">1. Identificação</h2>
+        <div class="grid grid-cols-1 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Sua Empresa / Seu Nome Profissional</label>
+            <input type="text" id="in-empresa" oninput="atualizarPreview()" placeholder="Ex: Silva Climatização & Elétrica" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Seu WhatsApp / Contato</label>
+              <input type="text" id="in-contato" oninput="atualizarPreview()" placeholder="(11) 99999-9999" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">CNPJ / CPF (Opcional)</label>
+              <input type="text" id="in-doc" oninput="atualizarPreview()" placeholder="00.000.000/0001-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Cliente</label>
+            <input type="text" id="in-cliente" oninput="atualizarPreview()" placeholder="Ex: Construtora Horizonte Ltda" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculadora de Margem Oculta -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <div class="flex justify-between items-center border-b pb-2">
+          <h2 class="font-bold text-slate-700">2. Precificação Inteligente</h2>
+          <span class="text-[11px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-medium">Invisível no PDF</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Margem de Lucro (%)</label>
+            <input type="number" id="in-margem" value="30" min="0" max="500" oninput="renderizarItens()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-emerald-700">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Impostos / Taxas (%)</label>
+            <input type="number" id="in-imposto" value="6" min="0" max="100" oninput="renderizarItens()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-between text-xs">
+          <div>
+            <span class="text-slate-500 block">Custo Base Total:</span>
+            <strong id="res-custo" class="text-slate-700 text-sm">R$ 0,00</strong>
+          </div>
+          <div class="text-right">
+            <span class="text-slate-500 block">Lucro Líquido Estimado:</span>
+            <strong id="res-lucro" class="text-emerald-600 text-sm">R$ 0,00</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Adicionar Itens -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="font-bold text-slate-700 border-b pb-2">3. Itens e Serviços</h2>
+        <div class="space-y-3">
+          <input type="text" id="item-desc" placeholder="Descrição do serviço ou material" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">Quantidade</label>
+              <input type="number" id="item-qtd" value="1" min="1" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">Seu Custo Unitário (R$)</label>
+              <input type="number" id="item-custo" placeholder="150.00" step="0.01" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+          </div>
+          <button onclick="adicionarItem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium text-sm py-2.5 rounded-lg transition">
+            + Adicionar Item ao Orçamento
+          </button>
+        </div>
+
+        <!-- Lista editável rápida -->
+        <div id="lista-controle" class="divide-y divide-slate-100 text-xs max-h-48 overflow-y-auto"></div>
+      </div>
+
+      <!-- Condições e Botão Gerar -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="font-bold text-slate-700 border-b pb-2">4. Condições Comerciais</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Validade da Proposta</label>
+            <input type="text" id="in-validade" value="7 dias corridos" oninput="atualizarPreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Forma de Pagamento</label>
+            <input type="text" id="in-pagamento" value="50% entrada + 50% entrega" oninput="atualizarPreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Observações / Garantia</label>
+          <textarea id="in-obs" rows="2" oninput="atualizarPreview()" placeholder="Ex: Garantia de 90 dias sobre os serviços executados." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea>
+        </div>
+        <button onclick="window.print()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md transition flex justify-center items-center gap-2">
+          Gerar e Salvar Proposta em PDF
+        </button>
+      </div>
+
+    </section>
+
+    <!-- Coluna Direita: Visualização da Folha A4 (O que vira PDF) -->
+    <section class="lg:col-span-7">
+      <div class="mb-2 flex justify-between items-center no-print">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pré-visualização do Documento (A4)</span>
+        <span class="text-xs text-slate-400">Os custos internos ficam ocultos aqui</span>
+      </div>
+
+      <div id="area-impressao" class="bg-white p-10 rounded-xl shadow-lg border border-slate-200 min-h-[840px] flex flex-col justify-between">
+        <div>
+          <!-- Cabeçalho do Orçamento -->
+          <div class="flex justify-between items-start border-b-2 border-slate-800 pb-6">
+            <div>
+              <h2 id="out-empresa" class="text-2xl font-extrabold text-slate-900">Sua Empresa / Profissional</h2>
+              <p id="out-contato" class="text-sm text-slate-600 mt-1">Contato: (00) 00000-0000</p>
+              <p id="out-doc" class="text-xs text-slate-500"></p>
+            </div>
+            <div class="text-right">
+              <span class="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">Proposta Comercial</span>
+              <p class="text-xs text-slate-500 mt-2">Data: <span id="out-data"></span></p>
+              <p class="text-xs text-slate-500">Validade: <span id="out-validade">7 dias corridos</span></p>
+            </div>
+          </div>
+
+          <!-- Dados do Cliente -->
+          <div class="my-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+            <span class="text-[11px] font-bold uppercase text-slate-400 block">Preparado para:</span>
+            <p id="out-cliente" class="text-base font-bold text-slate-800">Nome do Cliente</p>
+          </div>
+
+          <!-- Tabela de Itens -->
+          <table class="w-full text-left border-collapse mt-4">
+            <thead>
+              <tr class="border-b-2 border-slate-300 text-xs uppercase text-slate-500">
+                <th class="py-3">Descrição do Serviço / Item</th>
+                <th class="py-3 text-center w-20">Qtd</th>
+                <th class="py-3 text-right w-32">Valor Unit.</th>
+                <th class="py-3 text-right w-32">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-pdf" class="divide-y divide-slate-200 text-sm">
+              <tr>
+                <td colspan="4" class="py-8 text-center text-slate-400 italic">Adicione itens ao lado para visualizar o orçamento...</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Total -->
+          <div class="mt-6 flex justify-end">
+            <div class="w-64 bg-slate-900 text-white p-4 rounded-lg">
+              <div class="flex justify-between items-center">
+                <span class="text-xs uppercase text-slate-300">Investimento Total</span>
+                <span id="out-total" class="text-xl font-extrabold text-emerald-400">R$ 0,00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Condições -->
+          <div class="mt-8 space-y-3 text-sm text-slate-700 border-t pt-6">
+            <div>
+              <strong class="text-slate-900">Condições de Pagamento:</strong>
+              <span id="out-pagamento">50% entrada + 50% entrega</span>
+            </div>
+            <div id="box-obs" class="hidden">
+              <strong class="text-slate-900">Observações e Garantia:</strong>
+              <p id="out-obs" class="text-slate-600 mt-1"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rodapé e Marca d'Água Freemium -->
+        <div class="mt-12 pt-6 border-t border-slate-200 text-center">
+          <div class="w-48 border-t border-slate-400 mx-auto mb-1"></div>
+          <p class="text-xs text-slate-500">Assinatura / Aprovação do Cliente</p>
+          <p id="marca-dagua" class="text-[11px] text-slate-400 mt-6">
+            Documento gerado gratuitamente via <strong>OrçaFácil Pro</strong>
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal Versão PRO -->
+  <div id="modal-pro" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-slate-900">Ativar OrçaFácil PRO</h3>
+        <button onclick="fecharModalPro()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+      </div>
+      <p class="text-sm text-slate-600">
+        Remova a marca d'água do rodapé e passe mais credibilidade profissional nos seus orçamentos em PDF.
+      </p>
+      <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-sm text-emerald-900">
+        <strong>Acesso Vitalício: R$ 29,90 (Pagamento Único)</strong>
+        <p class="text-xs mt-1 text-emerald-700">Após o pagamento, você recebe sua Chave de Ativação instantaneamente.</p>
+      </div>
+      <a href="#" id="link-checkout" target="_blank" class="block w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-sm transition">
+        Adquirir Chave de Ativação
+      </a>
+      <div class="border-t pt-4 space-y-2">
+        <label class="block text-xs font-semibold text-slate-600">Já possui uma chave? Insira abaixo:</label>
+        <div class="flex gap-2">
+          <input type="text" id="input-chave" placeholder="Ex: PRO2026" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm uppercase">
+          <button onclick="validarChave()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-900">Ativar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let itens = [];
+    let isPro = localStorage.getItem('orcafacil_pro') === 'true';
+
+    // Inicializa data atual
+    document.getElementById('out-data').innerText = new Date().toLocaleDateString('pt-BR');
+    if (isPro) aplicarModoPro();
+
+    function formatarMoeda(valor) {
+      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function atualizarPreview() {
+      document.getElementById('out-empresa').innerText = document.getElementById('in-empresa').value || 'Sua Empresa / Profissional';
+      const contato = document.getElementById('in-contato').value;
+      document.getElementById('out-contato').innerText = contato ? `Contato: ${contato}` : '';
+      const doc = document.getElementById('in-doc').value;
+      document.getElementById('out-doc').innerText = doc ? `Documento: ${doc}` : '';
+      document.getElementById('out-cliente').innerText = document.getElementById('in-cliente').value || 'Nome do Cliente';
+      document.getElementById('out-validade').innerText = document.getElementById('in-validade').value || '7 dias corridos';
+      document.getElementById('out-pagamento').innerText = document.getElementById('in-pagamento').value || 'A combinar';
+      
+      const obs = document.getElementById('in-obs').value;
+      const boxObs = document.getElementById('box-obs');
+      if (obs.trim()) {
+        boxObs.classList.remove('hidden');
+        document.getElementById('out-obs').innerText = obs;
+      } else {
+        boxObs.classList.add('hidden');
+      }
+    }
+
+    function adicionarItem() {
+      const desc = document.getElementById('item-desc').value.trim();
+      const qtd = parseFloat(document.getElementById('item-qtd').value) || 1;
+      const custo = parseFloat(document.getElementById('item-custo').value) || 0;
+
+      if (!desc || custo <= 0) {
+        alert('Preencha a descrição e um custo válido maior que zero.');
+        return;
+      }
+
+      itens.push({ id: Date.now(), desc, qtd, custo });
+      document.getElementById('item-desc').value = '';
+      document.getElementById('item-custo').value = '';
+      renderizarItens();
+    }
+
+    function removerItem(id) {
+      itens = itens.filter(item => item.id !== id);
+      renderizarItens();
+    }
+
+    function renderizarItens() {
+      const margem = parseFloat(document.getElementById('in-margem').value) || 0;
+      const imposto = parseFloat(document.getElementById('in-imposto').value) || 0;
+      const fatorMultiplicador = 1 + (margem / 100) + (imposto / 100);
+
+      const tbody = document.getElementById('tabela-pdf');
+      const listaControle = document.getElementById('lista-controle');
+
+      if (itens.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-slate-400 italic">Adicione itens ao lado para visualizar o orçamento...</td></tr>';
+        listaControle.innerHTML = '';
+        document.getElementById('out-total').innerText = 'R$ 0,00';
+        document.getElementById('res-custo').innerText = 'R$ 0,00';
+        document.getElementById('res-lucro').innerText = 'R$ 0,00';
+        return;
+      }
+
+      let htmlPdf = '';
+      let htmlControle = '';
+      let custoTotalGeral = 0;
+      let vendaTotalGeral = 0;
+
+      itens.forEach(item => {
+        const custoItemTotal = item.custo * item.qtd;
+        const precoUnitVenda = item.custo * fatorMultiplicador;
+        const subtotalVenda = precoUnitVenda * item.qtd;
+
+        custoTotalGeral += custoItemTotal;
+        vendaTotalGeral += subtotalVenda;
+
+        htmlPdf += `
+          <tr>
+            <td class="py-3 font-medium text-slate-800">${item.desc}</td>
+            <td class="py-3 text-center text-slate-600">${item.qtd}</td>
+            <td class="py-3 text-right text-slate-600">${formatarMoeda(precoUnitVenda)}</td>
+            <td class="py-3 text-right font-semibold text-slate-900">${formatarMoeda(subtotalVenda)}</td>
+          </tr>
+        `;
+
+        htmlControle += `
+          <div class="py-2 flex justify-between items-center">
+            <div>
+              <span class="font-medium text-slate-700">${item.qtd}x ${item.desc}</span>
+              <span class="text-slate-400 block">Custo: ${formatarMoeda(custoItemTotal)} → Venda: ${formatarMoeda(subtotalVenda)}</span>
+            </div>
+            <button onclick="removerItem(${item.id})" class="text-red-500 hover:text-red-700 font-bold px-2">Excluir</button>
+          </div>
+        `;
+      });
+
+      const impostosTotais = custoTotalGeral * (imposto / 100);
+      const lucroLiquido = vendaTotalGeral - custoTotalGeral - impostosTotais;
+
+      tbody.innerHTML = htmlPdf;
+      listaControle.innerHTML = htmlControle;
+      document.getElementById('out-total').innerText = formatarMoeda(vendaTotalGeral);
+      document.getElementById('res-custo').innerText = formatarMoeda(custoTotalGeral);
+      document.getElementById('res-lucro').innerText = formatarMoeda(lucroLiquido);
+    }
+
+    function abrirModalPro() {
+      document.getElementById('modal-pro').classList.remove('hidden');
+      document.getElementById('modal-pro').classList.add('flex');
+    }
+
+    function fecharModalPro() {
+      document.getElementById('modal-pro').classList.add('hidden');
+      document.getElementById('modal-pro').classList.remove('flex');
+    }
+
+    function validarChave() {
+      const chave = document.getElementById('input-chave').value.trim().toUpperCase();
+      // Lista de chaves válidas (podemos expandir com padrão lógico depois)
+      if (chave === 'PRO2026' || chave === 'ORCA-VIP-99') {
+        localStorage.setItem('orcafacil_pro', 'true');
+        aplicarModoPro();
+        fecharModalPro();
+        alert('Versão PRO ativada com sucesso!');
+      } else {
+        alert('Chave inválida. Verifique o código recebido após a compra.');
+      }
+    }
+
+    function aplicarModoPro() {
+      document.getElementById('marca-dagua').classList.add('hidden');
+      document.getElementById('badge-plano').innerText = 'Plano PRO Ativo';
+      document.getElementById('badge-plano').classList.replace('bg-slate-700', 'bg-emerald-900');
+      document.getElementById('badge-plano').classList.replace('text-slate-300', 'text-emerald-300');
+      document.getElementById('btn-upgrade').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
