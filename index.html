@@ -9,10 +9,10 @@
   <style>
     @media print {
       .no-print { display: none !important; }
-      body { background: white !important; margin: 0 !important; padding: 0 !important; }
+      body { background: white !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       main { display: block !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
       #coluna-preview { width: 100% !important; margin: 0 !important; padding: 0 !important; }
-      #area-impressao { box-shadow: none !important; border: none !important; padding: 10mm !important; min-height: auto !important; width: 100% !important; }
+      #area-impressao { box-shadow: none !important; border: none !important; padding: 10mm !important; min-height: 270mm !important; width: 100% !important; }
     }
   </style>
 </head>
@@ -139,8 +139,22 @@
         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pré-visualização do Documento (A4)</span>
         <span class="text-xs text-slate-400">Os custos internos ficam ocultos aqui</span>
       </div>
-      <div id="area-impressao" class="bg-white p-10 rounded-xl shadow-lg border border-slate-200 min-h-[840px] flex flex-col justify-between">
-        <div>
+
+      <div id="area-impressao" class="relative overflow-hidden bg-white p-10 rounded-xl shadow-lg border border-slate-200 min-h-[840px] flex flex-col justify-between">
+        
+        <!-- MARCA D'ÁGUA DIAGONAL GRANDE (VISÍVEL APENAS NO PLANO GRATUITO) -->
+        <div id="marca-dagua-diagonal" class="pointer-events-none select-none absolute inset-0 flex flex-col items-center justify-center z-20 overflow-hidden">
+          <div class="-rotate-[34deg] text-center opacity-25">
+            <span class="block text-[72px] sm:text-[88px] font-black tracking-widest text-slate-500 uppercase leading-none border-y-4 border-slate-500 py-2 px-6">
+              DEMONSTRAÇÃO
+            </span>
+            <span class="block text-lg sm:text-xl font-extrabold tracking-widest text-slate-600 uppercase mt-2">
+              VERSÃO GRATUITA • ORÇAFÁCIL PRO
+            </span>
+          </div>
+        </div>
+
+        <div class="relative z-10">
           <div class="flex justify-between items-start border-b-2 border-slate-800 pb-6 gap-4">
             <div class="flex items-center gap-4">
               <img id="out-logo" src="" alt="Logo" class="hidden h-16 w-auto object-contain rounded">
@@ -186,10 +200,11 @@
             <div id="box-obs" class="hidden"><strong class="text-slate-900">Observações e Garantia:</strong><p id="out-obs" class="text-slate-600 mt-1"></p></div>
           </div>
         </div>
-        <div class="mt-12 pt-6 border-t border-slate-200 text-center">
+
+        <div class="relative z-10 mt-12 pt-6 border-t border-slate-200 text-center">
           <div class="w-48 border-t border-slate-400 mx-auto mb-1"></div>
           <p class="text-xs text-slate-500">Assinatura / Aprovação do Cliente</p>
-          <p id="marca-dagua" class="text-[11px] text-slate-400 mt-6">Documento gerado gratuitamente via <strong>OrçaFácil Pro</strong></p>
+          <p id="marca-dagua" class="text-[11px] text-slate-400 mt-6">Documento de demonstração gerado gratuitamente via <strong>OrçaFácil Pro</strong></p>
         </div>
       </div>
     </section>
@@ -239,7 +254,7 @@
       <div class="flex justify-between items-center"><h3 class="text-lg font-bold text-slate-900">Ativar OrçaFácil PRO</h3><button onclick="fecharModalPro()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button></div>
       <ul class="text-sm text-slate-600 space-y-2">
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Adicione o <strong>Logotipo da sua empresa</strong> no topo</li>
-        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Remova completamente a marca d'água do rodapé</li>
+        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Remova completamente a marca d'água de demonstração</li>
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Orçamentos ilimitados salvos na sua conta</li>
       </ul>
       <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-sm text-emerald-900">
@@ -514,6 +529,7 @@
 
     function aplicarModoPro() {
       document.getElementById('marca-dagua').classList.add('hidden');
+      document.getElementById('marca-dagua-diagonal').classList.add('hidden');
       document.getElementById('badge-plano').innerText = 'Plano PRO Ativo';
       document.getElementById('badge-plano').classList.replace('bg-slate-700', 'bg-emerald-900');
       document.getElementById('badge-plano').classList.replace('text-slate-300', 'text-emerald-300');
