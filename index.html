@@ -25,13 +25,18 @@
         <h1 class="text-xl font-bold tracking-tight text-emerald-400">OrçaFácil <span class="text-white">Pro</span></h1>
         <p class="text-xs text-slate-400">Precifique com segurança e gere propostas profissionais em PDF</p>
       </div>
-      <div class="flex flex-wrap items-center gap-3">
+      <div class="flex flex-wrap items-center gap-2.5">
         <button onclick="abrirHistorico()" id="btn-historico" class="hidden bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 text-xs px-3 py-2 rounded-lg transition">Meus Orçamentos Salvos</button>
-        <span id="badge-plano" class="text-xs bg-slate-700 text-slate-300 px-3 py-1 rounded-full font-medium">Plano Gratuito</span>
-        <button onclick="abrirModalPro()" id="btn-upgrade" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-xs px-4 py-2 rounded-lg transition shadow">Liberar Versão PRO</button>
-        <div id="area-deslogado">
-          <button onclick="abrirModalAuth()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Entrar / Criar Conta</button>
+        
+        <span id="badge-plano" class="hidden text-xs bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full font-medium">Plano Gratuito (2/2 PDFs)</span>
+        <button onclick="abrirModalPro()" id="btn-upgrade" class="hidden bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-xs px-4 py-2 rounded-lg transition shadow">Liberar Versão PRO</button>
+        
+        <!-- Dois Botões Separados para Deslogado -->
+        <div id="area-deslogado" class="flex items-center gap-2">
+          <button onclick="abrirModalLogin()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Entrar</button>
+          <button onclick="abrirModalCadastro()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold px-4 py-2 rounded-lg transition shadow">Criar Conta</button>
         </div>
+
         <div id="area-logado" class="hidden flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
           <span id="user-email-display" class="text-xs text-slate-300 max-w-[140px] truncate"></span>
           <button onclick="fazerLogout()" class="text-[11px] text-amber-400 hover:text-amber-300 font-bold ml-1">Sair</button>
@@ -41,6 +46,37 @@
       </div>
     </div>
   </header>
+
+  <!-- Tela de Bloqueio para Visitantes Não Logados -->
+  <section id="tela-bloqueio-visitante" class="max-w-2xl mx-auto my-12 px-6 no-print">
+    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 sm:p-10 text-center space-y-6">
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black">
+        ✓
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-2xl font-extrabold text-slate-900">Crie orçamentos profissionais em minutos</h2>
+        <p class="text-sm text-slate-600 max-w-md mx-auto">
+          Para começar a montar suas propostas, calcular sua margem real e gerar PDFs na nuvem, entre na sua conta ou cadastre-se gratuitamente agora.
+        </p>
+      </div>
+
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left max-w-md mx-auto space-y-2 text-xs text-slate-600">
+        <p class="font-bold text-slate-800 uppercase tracking-wider text-[11px]">O que você ganha ao criar sua conta grátis:</p>
+        <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Consulta automática de CNPJ pela Receita Federal</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Calculadora inteligente de margem e impostos</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Até <strong>2 orçamentos em PDF gratuitos</strong> para testar</div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+        <button onclick="abrirModalCadastro()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3.5 rounded-xl shadow-md transition">
+          Criar Conta Gratuita
+        </button>
+        <button onclick="abrirModalLogin()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold text-sm px-6 py-3.5 rounded-xl transition">
+          Já tenho conta (Entrar)
+        </button>
+      </div>
+    </div>
+  </section>
 
   <!-- Banner Exclusivo da Visão Pública do Cliente (Link de Aprovação) -->
   <div id="banner-cliente-publico" class="hidden bg-slate-900 text-white py-4 px-6 shadow-md no-print">
@@ -57,7 +93,8 @@
     </div>
   </div>
 
-  <main id="conteudo-principal" class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <!-- Área Principal do Sistema (Visível apenas após login ou via link público do cliente) -->
+  <main id="conteudo-principal" class="hidden max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
     <!-- Coluna Esquerda -->
     <section id="coluna-controles" class="lg:col-span-5 space-y-6 no-print">
       
@@ -121,7 +158,6 @@
           <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">Escolha 1 opção</span>
         </div>
 
-        <!-- Seletor Exclusivo -->
         <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl">
           <button type="button" id="btn-modo-direto" onclick="definirModoPreco('direto')" class="py-2 px-3 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm">
             Já sei o preço final
@@ -131,12 +167,10 @@
           </button>
         </div>
 
-        <!-- Descrição do Modo Direto -->
         <div id="painel-modo-direto" class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs text-slate-600">
           Você informa diretamente o <strong>preço final de venda</strong> de cada item ou serviço na seção abaixo.
         </div>
 
-        <!-- Painel da Calculadora de Margem Oculta -->
         <div id="painel-modo-calculadora" class="hidden space-y-3">
           <div class="flex justify-between items-center">
             <span class="text-[11px] text-slate-500">Informe seu custo nos itens e o sistema calcula a venda:</span>
@@ -218,7 +252,6 @@
             </select>
           </div>
 
-          <!-- Campos Específicos para Pix -->
           <div id="campos-pix" class="grid grid-cols-12 gap-2">
             <div class="col-span-5">
               <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tipo de Chave</label>
@@ -236,7 +269,6 @@
             </div>
           </div>
 
-          <!-- Campos Específicos para Conta Bancária -->
           <div id="campos-banco" class="hidden space-y-2">
             <div class="grid grid-cols-3 gap-2">
               <div>
@@ -269,7 +301,7 @@
             <button onclick="salvarNaNuvem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 rounded-xl shadow transition text-xs sm:text-sm">
               Salvar na Nuvem
             </button>
-            <button onclick="gerarPDF()" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl shadow transition text-xs sm:text-sm">
+            <button onclick="gerarPDF()" id="btn-gerar-pdf" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl shadow transition text-xs sm:text-sm">
               Gerar PDF (A4)
             </button>
           </div>
@@ -387,22 +419,65 @@
     </section>
   </main>
 
-  <!-- Modais -->
-  <div id="modal-auth" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
+  <!-- Modal 1: ENTRAR (Login) -->
+  <div id="modal-login" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
     <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center"><h3 class="text-lg font-bold text-slate-900">Sua Conta na Nuvem</h3><button onclick="fecharModalAuth()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button></div>
-      <p class="text-xs text-slate-500">Entre ou crie sua conta gratuita para salvar seus orçamentos e acessar de qualquer dispositivo.</p>
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-slate-900">Entrar na sua Conta</h3>
+        <button onclick="fecharModalLogin()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-500">Acesse sua conta para criar orçamentos e ver seu histórico na nuvem.</p>
       <div class="space-y-3">
-        <div><label class="block text-xs font-semibold text-slate-600 mb-1">Seu E-mail</label><input type="email" id="auth-email" placeholder="seu@email.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
-        <div><label class="block text-xs font-semibold text-slate-600 mb-1">Sua Senha (mín. 6 caracteres)</label><input type="password" id="auth-senha" placeholder="******" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
-        <div class="grid grid-cols-2 gap-2 pt-2">
-          <button onclick="fazerLogin()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 rounded-lg text-sm transition">Entrar</button>
-          <button onclick="fazerCadastro()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg text-sm transition">Criar Conta</button>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Seu E-mail</label>
+          <input type="email" id="login-email" placeholder="seu@email.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
         </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Sua Senha</label>
+          <input type="password" id="login-senha" placeholder="******" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <button onclick="fazerLogin()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-lg text-sm transition">
+          Entrar Agora
+        </button>
+        <p class="text-center text-xs text-slate-500 pt-1">
+          Ainda não tem conta? <button type="button" onclick="fecharModalLogin(); abrirModalCadastro();" class="text-emerald-600 font-bold underline">Criar conta grátis</button>
+        </p>
       </div>
     </div>
   </div>
 
+  <!-- Modal 2: CRIAR CONTA (Cadastro com E-mail, Telefone e Senha) -->
+  <div id="modal-cadastro" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-slate-900">Criar Conta Gratuita</h3>
+        <button onclick="fecharModalCadastro()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-500">Cadastre-se gratuitamente para liberar até <strong>2 orçamentos em PDF</strong>.</p>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Seu E-mail</label>
+          <input type="email" id="cad-email" placeholder="seu@email.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Seu WhatsApp / Telefone</label>
+          <input type="text" id="cad-telefone" inputmode="numeric" oninput="maskTelSimples(this)" onkeyup="maskTelSimples(this)" placeholder="(00) 00000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Crie uma Senha (mín. 6 caracteres)</label>
+          <input type="password" id="cad-senha" placeholder="******" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <button onclick="fazerCadastro()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-sm transition shadow">
+          Criar Minha Conta
+        </button>
+        <p class="text-center text-xs text-slate-500 pt-1">
+          Já possui cadastro? <button type="button" onclick="fecharModalCadastro(); abrirModalLogin();" class="text-slate-800 font-bold underline">Entrar</button>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Histórico -->
   <div id="modal-historico" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
     <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[80vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-3">
@@ -413,6 +488,7 @@
     </div>
   </div>
 
+  <!-- Modal Excluir Conta -->
   <div id="modal-excluir-conta" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border-2 border-red-100">
       <div class="flex justify-between items-center"><h3 class="text-lg font-bold text-red-600">Excluir Minha Conta</h3><button onclick="fecharModalExcluirConta()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button></div>
@@ -426,14 +502,18 @@
     </div>
   </div>
 
+  <!-- Modal PRO -->
   <div id="modal-pro" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center"><h3 class="text-lg font-bold text-slate-900">Ativar OrçaFácil PRO</h3><button onclick="fecharModalPro()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button></div>
+      <p id="aviso-limite-pro" class="hidden bg-amber-50 border border-amber-300 text-amber-900 text-xs p-3 rounded-lg font-medium">
+        Você atingiu o limite de <strong>2 orçamentos em PDF</strong> do plano gratuito. Ative a versão PRO para gerar orçamentos ilimitados!
+      </p>
       <ul class="text-sm text-slate-600 space-y-2">
+        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> <strong>Orçamentos em PDF ilimitados</strong> (sem limite de 2 documentos)</li>
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Adicione o <strong>Logotipo da sua empresa</strong> no topo</li>
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Remova completamente a marca d'água de demonstração</li>
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> <strong>Envio direto no WhatsApp</strong> + <strong>Link de Aprovação Online</strong></li>
-        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Orçamentos ilimitados salvos na sua conta</li>
       </ul>
       <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-sm text-emerald-900">
         <strong>Acesso Vitalício: R$ 29,90 (Pagamento Único)</strong>
@@ -445,18 +525,24 @@
   </div>
 
   <script>
+    const LIMITE_PDF_GRATUITO = 2;
     let orcamentoSalvoIdAtual = null;
     let propostaPublicaId = null;
-    let modoPreco = 'direto'; // 'direto' ou 'calculadora'
+    let modoPreco = 'direto';
     let itemEmEdicaoId = null;
+    let pdfsGeradosUsuario = 0;
 
-    function maskTel(el) {
+    function maskTelSimples(el) {
       let n = el.value.replace(/\D/g, '').substring(0, 11);
       if (n.length > 10) el.value = n.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
       else if (n.length > 6) el.value = n.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
       else if (n.length > 2) el.value = n.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
       else if (n.length > 0) el.value = n.replace(/^(\d*)/, '($1');
       else el.value = '';
+    }
+
+    function maskTel(el) {
+      maskTelSimples(el);
       salvarEAtualizar();
     }
 
@@ -560,7 +646,6 @@
       return parseInt(limpo, 10) / 100;
     }
 
-    // MODO DE PRECIFICAÇÃO (DIRETO VS CALCULADORA)
     function definirModoPreco(modo) {
       modoPreco = modo;
       localStorage.setItem('orcafacil_modo_preco', modo);
@@ -587,7 +672,6 @@
       renderizarItens();
     }
 
-    // ALTERNAR CAMPOS DE PAGAMENTO (PIX VS BANCO)
     function alternarCamposPagamento() {
       const meio = document.getElementById('in-meio-pag').value;
       const boxPix = document.getElementById('campos-pix');
@@ -666,7 +750,11 @@
       carregarRascunhoLocal();
       if (!sb) return;
       const { data: { session } } = await sb.auth.getSession();
-      if (session) await configurarUsuarioLogado(session.user);
+      if (session) {
+        await configurarUsuarioLogado(session.user);
+      } else {
+        configurarUsuarioDeslogado();
+      }
       sb.auth.onAuthStateChange(async (_e, s) => s ? await configurarUsuarioLogado(s.user) : configurarUsuarioDeslogado());
     };
 
@@ -684,6 +772,8 @@
     async function carregarModoPublicoCliente(id) {
       propostaPublicaId = id;
       document.getElementById('barra-topo').classList.add('hidden');
+      document.getElementById('tela-bloqueio-visitante').classList.add('hidden');
+      document.getElementById('conteudo-principal').classList.remove('hidden');
       document.getElementById('coluna-controles').classList.add('hidden');
       document.getElementById('coluna-preview').classList.replace('lg:col-span-7', 'lg:col-span-12');
       document.getElementById('coluna-preview').classList.add('max-w-4xl', 'mx-auto', 'w-full');
@@ -747,41 +837,100 @@
       document.getElementById('texto-aprovado-detalhes').innerText = `Aceite digital registrado em ${dataFormatada}`;
     }
 
+    function atualizarIndicadorPlanoGratuito() {
+      if (isPro) return;
+      const restantes = Math.max(0, LIMITE_PDF_GRATUITO - pdfsGeradosUsuario);
+      document.getElementById('badge-plano').innerText = `Gratuito (${restantes}/${LIMITE_PDF_GRATUITO} PDFs restantes)`;
+      document.getElementById('btn-gerar-pdf').innerText = restantes > 0
+        ? `Gerar PDF (${restantes} restante${restantes > 1 ? 's' : ''})`
+        : 'Gerar PDF (Limite Atingido)';
+    }
+
     async function configurarUsuarioLogado(user) {
       currentUser = user;
+      document.getElementById('tela-bloqueio-visitante').classList.add('hidden');
+      document.getElementById('conteudo-principal').classList.remove('hidden');
       document.getElementById('area-deslogado').classList.add('hidden');
       document.getElementById('area-logado').classList.remove('hidden');
       document.getElementById('btn-historico').classList.remove('hidden');
+      document.getElementById('badge-plano').classList.remove('hidden');
+      document.getElementById('btn-upgrade').classList.remove('hidden');
       document.getElementById('user-email-display').innerText = user.email;
-      const { data: profile } = await sb.from('profiles').select('is_pro, ultimo_numero').eq('id', user.id).single();
+
+      const { data: profile } = await sb.from('profiles').select('is_pro, ultimo_numero, pdfs_gerados, telefone').eq('id', user.id).single();
       if (profile) {
         ultimoNumeroSalvo = profile.ultimo_numero || 0;
+        pdfsGeradosUsuario = profile.pdfs_gerados || 0;
         const anoAtual = extrairAnoDoCampoNumero();
         document.getElementById('in-num').value = formatarNumeroSequencial(ultimoNumeroSalvo + 1, anoAtual);
+
+        // Se o campo de contato do orçamento estiver vazio, preenche com o telefone do cadastro
+        if (profile.telefone && !document.getElementById('in-contato').value) {
+          const elTel = document.getElementById('in-contato');
+          elTel.value = profile.telefone;
+          maskTel(elTel);
+        }
+
         atualizarPreview();
         isPro = !!profile.is_pro;
-        if (isPro) aplicarModoPro();
+        if (isPro) {
+          aplicarModoPro();
+        } else {
+          atualizarIndicadorPlanoGratuito();
+        }
       }
     }
 
     function configurarUsuarioDeslogado() {
-      currentUser = null; isPro = false; ultimoNumeroSalvo = 0;
+      currentUser = null; isPro = false; ultimoNumeroSalvo = 0; pdfsGeradosUsuario = 0;
+      document.getElementById('conteudo-principal').classList.add('hidden');
+      document.getElementById('tela-bloqueio-visitante').classList.remove('hidden');
       document.getElementById('area-deslogado').classList.remove('hidden');
       document.getElementById('area-logado').classList.add('hidden');
       document.getElementById('btn-historico').classList.add('hidden');
+      document.getElementById('badge-plano').classList.add('hidden');
+      document.getElementById('btn-upgrade').classList.add('hidden');
     }
 
     async function fazerCadastro() {
-      const email = document.getElementById('auth-email').value.trim(), password = document.getElementById('auth-senha').value;
-      if (!email || password.length < 6) return alert('Informe um e-mail válido e senha com 6+ caracteres.');
-      const { error } = await sb.auth.signUp({ email, password });
-      if (error) alert('Erro: ' + error.message); else { fecharModalAuth(); alert('Conta criada com sucesso!'); }
+      const email = document.getElementById('cad-email').value.trim();
+      const telefone = document.getElementById('cad-telefone').value.trim();
+      const password = document.getElementById('cad-senha').value;
+
+      if (!email || !email.includes('@')) return alert('Informe um e-mail válido.');
+      if (telefone.replace(/\D/g, '').length < 10) return alert('Informe um número de WhatsApp / telefone válido com DDD.');
+      if (password.length < 6) return alert('A senha precisa ter pelo menos 6 caracteres.');
+
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password,
+        options: { data: { telefone } }
+      });
+
+      if (error) {
+        alert('Erro ao criar conta: ' + error.message);
+        return;
+      }
+
+      if (data && data.user) {
+        await sb.from('profiles').update({ telefone }).eq('id', data.user.id);
+      }
+
+      fecharModalCadastro();
+      alert('Conta criada com sucesso! Você já pode criar até 2 orçamentos em PDF gratuitamente.');
     }
 
     async function fazerLogin() {
-      const email = document.getElementById('auth-email').value.trim(), password = document.getElementById('auth-senha').value;
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-senha').value;
+      if (!email || !password) return alert('Preencha seu e-mail e senha.');
+
       const { error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) alert('E-mail ou senha incorretos.'); else fecharModalAuth();
+      if (error) {
+        alert('E-mail ou senha incorretos.');
+      } else {
+        fecharModalLogin();
+      }
     }
 
     async function fazerLogout() { await sb.auth.signOut(); location.reload(); }
@@ -795,7 +944,7 @@
 
     async function salvarNaNuvem(silencioso = false) {
       if (!currentUser) {
-        abrirModalAuth();
+        abrirModalLogin();
         return null;
       }
       const cliente = document.getElementById('in-cliente').value.trim() || 'Cliente sem nome';
@@ -831,7 +980,6 @@
       }
       orcamentoSalvoIdAtual = data.id;
 
-      // Extrai apenas a parte antes da barra (ex: #0001/2026 -> 1)
       const parteNumero = numero.split('/')[0];
       const numExtraido = parseInt(parteNumero.replace(/\D/g, ''), 10);
       if (!isNaN(numExtraido) && numExtraido > ultimoNumeroSalvo) {
@@ -847,8 +995,8 @@
     }
 
     async function copiarLinkAprovacao() {
-      if (!isPro) return abrirModalPro();
-      if (!currentUser) return abrirModalAuth();
+      if (!currentUser) return abrirModalLogin();
+      if (!isPro) return abrirModalPro(false);
       if (itens.length === 0) return alert('Adicione pelo menos um item ao orçamento antes de gerar o link de aprovação.');
 
       let idParaLink = orcamentoSalvoIdAtual;
@@ -864,7 +1012,8 @@
     }
 
     function enviarWhatsApp() {
-      if (!isPro) return abrirModalPro();
+      if (!currentUser) return abrirModalLogin();
+      if (!isPro) return abrirModalPro(false);
 
       const cliente = document.getElementById('in-cliente').value.trim() || 'Cliente';
       const empresa = document.getElementById('in-empresa').value.trim() || 'nossa equipe';
@@ -996,7 +1145,7 @@
     }
 
     function carregarLogo(event) {
-      if (!isPro) { event.target.value = ''; return abrirModalPro(); }
+      if (!isPro) { event.target.value = ''; return abrirModalPro(false); }
       const file = event.target.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = e => { localStorage.setItem('orcafacil_logo', e.target.result); exibirLogo(e.target.result); };
@@ -1033,7 +1182,6 @@
       else boxObs.classList.add('hidden');
     }
 
-    // ADICIONAR OU EDITAR ITEM
     function adicionarOuAtualizarItem() {
       const desc = document.getElementById('item-desc').value.trim();
       const qtd = parseFloat(document.getElementById('item-qtd').value) || 1;
@@ -1067,8 +1215,7 @@
       itemEmEdicaoId = id;
       document.getElementById('item-desc').value = item.desc;
       document.getElementById('item-qtd').value = item.qtd;
-      const elValor = document.getElementById('item-custo');
-      elValor.value = formatarMoeda(item.custo);
+      document.getElementById('item-custo').value = formatarMoeda(item.custo);
 
       document.getElementById('badge-editando').classList.remove('hidden');
       document.getElementById('btn-salvar-item').innerText = 'Salvar Alterações do Item';
@@ -1159,17 +1306,38 @@
       document.getElementById('res-lucro').innerText = formatarMoeda(lucro);
     }
 
-    function gerarPDF() {
+    async function gerarPDF() {
+      if (!currentUser) return abrirModalLogin();
+      if (itens.length === 0) return alert('Adicione pelo menos um item ao orçamento antes de gerar o PDF.');
+
+      if (!isPro) {
+        if (pdfsGeradosUsuario >= LIMITE_PDF_GRATUITO) {
+          return abrirModalPro(true);
+        }
+        pdfsGeradosUsuario += 1;
+        await sb.from('profiles').update({ pdfs_gerados: pdfsGeradosUsuario }).eq('id', currentUser.id);
+        atualizarIndicadorPlanoGratuito();
+      }
+
       const cliente = document.getElementById('in-cliente').value.trim(), orig = document.title;
       if (cliente) document.title = `Proposta_${cliente.replace(/\s+/g, '_')}`;
-      window.print(); document.title = orig;
+      window.print();
+      document.title = orig;
     }
 
-    function abrirModalAuth() { document.getElementById('modal-auth').classList.replace('hidden', 'flex'); }
-    function fecharModalAuth() { document.getElementById('modal-auth').classList.replace('flex', 'hidden'); }
+    function abrirModalLogin() { document.getElementById('modal-login').classList.replace('hidden', 'flex'); }
+    function fecharModalLogin() { document.getElementById('modal-login').classList.replace('flex', 'hidden'); }
+    function abrirModalCadastro() { document.getElementById('modal-cadastro').classList.replace('hidden', 'flex'); }
+    function fecharModalCadastro() { document.getElementById('modal-cadastro').classList.replace('flex', 'hidden'); }
     function abrirModalExcluirConta() { document.getElementById('confirmacao-excluir').value = ''; document.getElementById('modal-excluir-conta').classList.replace('hidden', 'flex'); }
     function fecharModalExcluirConta() { document.getElementById('modal-excluir-conta').classList.replace('flex', 'hidden'); }
-    function abrirModalPro() { document.getElementById('modal-pro').classList.replace('hidden', 'flex'); }
+    
+    function abrirModalPro(motivoLimite = false) {
+      const aviso = document.getElementById('aviso-limite-pro');
+      if (motivoLimite) aviso.classList.remove('hidden');
+      else aviso.classList.add('hidden');
+      document.getElementById('modal-pro').classList.replace('hidden', 'flex');
+    }
     function fecharModalPro() { document.getElementById('modal-pro').classList.replace('flex', 'hidden'); }
 
     function aplicarModoPro() {
@@ -1179,6 +1347,7 @@
       document.getElementById('badge-plano').classList.replace('bg-slate-700', 'bg-emerald-900');
       document.getElementById('badge-plano').classList.replace('text-slate-300', 'text-emerald-300');
       document.getElementById('btn-upgrade').classList.add('hidden');
+      document.getElementById('btn-gerar-pdf').innerText = 'Gerar PDF (A4)';
       
       document.getElementById('badge-wpp-pro').innerText = 'Liberado';
       document.getElementById('badge-link-pro').innerText = 'Liberado';
