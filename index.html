@@ -17,44 +17,6 @@
       .no-print { display: none !important; }
     }
   </style>
-  <script>
-    // Funções de máscara carregadas no HEAD antes da página renderizar
-    function maskTel(el) {
-      let n = el.value.replace(/\D/g, '').substring(0, 11);
-      if (n.length > 10) {
-        el.value = n.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-      } else if (n.length > 6) {
-        el.value = n.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
-      } else if (n.length > 2) {
-        el.value = n.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
-      } else if (n.length > 0) {
-        el.value = n.replace(/^(\d*)/, '($1');
-      } else {
-        el.value = '';
-      }
-      if (typeof salvarEAtualizar === 'function') salvarEAtualizar();
-    }
-
-    function maskDoc(el) {
-      let n = el.value.replace(/\D/g, '').substring(0, 14);
-      if (n.length <= 11) {
-        // CPF: 000.000.000-00
-        if (n.length > 9) {
-          el.value = n.replace(/^(\d{3})(\d{3})(\d{3})(\d{1,2}).*/, '$1.$2.$3-$4');
-        } else if (n.length > 6) {
-          el.value = n.replace(/^(\d{3})(\d{3})(\d{1,3}).*/, '$1.$2.$3');
-        } else if (n.length > 3) {
-          el.value = n.replace(/^(\d{3})(\d{1,3}).*/, '$1.$2');
-        } else {
-          el.value = n;
-        }
-      } else {
-        // CNPJ: 00.000.000/0000-00
-        el.value = n.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2}).*/, '$1.$2.$3/$4-$5');
-      }
-      if (typeof salvarEAtualizar === 'function') salvarEAtualizar();
-    }
-  </script>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans">
 
@@ -162,4 +124,72 @@
         <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-between text-xs">
           <div>
             <span class="text-slate-500 block">Custo Base Total:</span>
-            <strong id="
+            <strong id="res-custo" class="text-slate-700 text-sm">R$ 0,00</strong>
+          </div>
+          <div class="text-right">
+            <span class="text-slate-500 block">Lucro Líquido Estimado:</span>
+            <strong id="res-lucro" class="text-emerald-600 text-sm">R$ 0,00</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Adicionar Itens -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="font-bold text-slate-700 border-b pb-2">3. Itens e Serviços</h2>
+        <div class="space-y-3">
+          <input type="text" id="item-desc" placeholder="Descrição do serviço ou material" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">Quantidade</label>
+              <input type="number" id="item-qtd" value="1" min="1" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">Seu Custo Unitário (R$)</label>
+              <input type="number" id="item-custo" placeholder="150.00" step="0.01" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+          </div>
+          <button onclick="adicionarItem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium text-sm py-2.5 rounded-lg transition">
+            + Adicionar Item ao Orçamento
+          </button>
+        </div>
+
+        <div id="lista-controle" class="divide-y divide-slate-100 text-xs max-h-48 overflow-y-auto"></div>
+      </div>
+
+      <!-- Condições e Botões de Ação -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="font-bold text-slate-700 border-b pb-2">4. Condições Comerciais</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Validade da Proposta</label>
+            <input type="text" id="in-validade" value="7 dias corridos" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Forma de Pagamento</label>
+            <input type="text" id="in-pagamento" value="50% entrada + 50% entrega" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Observações / Garantia</label>
+          <textarea id="in-obs" rows="2" oninput="salvarEAtualizar()" placeholder="Ex: Garantia de 90 dias sobre os serviços executados." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onclick="salvarNaNuvem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 rounded-xl shadow transition text-sm">
+            Salvar na Nuvem
+          </button>
+          <button onclick="gerarPDF()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md transition text-sm">
+            Gerar PDF
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Coluna Direita: Visualização da Folha A4 -->
+    <section class="lg:col-span-7">
+      <div class="mb-2 flex justify-between items-center no-print">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pré-visualização do Documento (A4)</span>
+        <span class="text-xs text-slate-400">Os custos internos ficam ocultos aqui</span>
+      </div>
+
+      <div id="area-impressao" class="bg-white p-10 rounded-xl shadow-lg border border-slate-200 min-h-[84
