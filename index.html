@@ -18,11 +18,12 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans">
 
-  <header class="bg-slate-900 text-white py-4 px-6 shadow-md no-print">
+  <!-- Barra Superior -->
+  <header id="barra-topo" class="bg-slate-900 text-white py-4 px-6 shadow-md no-print">
     <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
       <div>
         <h1 class="text-xl font-bold tracking-tight text-emerald-400">OrçaFácil <span class="text-white">Pro</span></h1>
-        <p class="text-xs text-slate-400">Calcule sua margem real e gere propostas em PDF na nuvem</p>
+        <p class="text-xs text-slate-400">Calcule sua margem real, gere QR Code Pix e feche pelo WhatsApp</p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <button onclick="abrirHistorico()" id="btn-historico" class="hidden bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 text-xs px-3 py-2 rounded-lg transition">Meus Orçamentos Salvos</button>
@@ -41,12 +42,29 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <!-- Banner Exclusivo da Visão Pública do Cliente (Link de Aprovação) -->
+  <div id="banner-cliente-publico" class="hidden bg-slate-900 text-white py-4 px-6 shadow-md no-print">
+    <div class="max-w-4xl mx-auto flex flex-wrap justify-between items-center gap-4">
+      <div>
+        <span class="text-xs uppercase tracking-wider text-emerald-400 font-bold">Proposta Comercial Online</span>
+        <p class="text-sm text-slate-300">Revise os itens abaixo e clique em aprovar para autorizar o serviço.</p>
+      </div>
+      <div id="box-acao-aprovacao">
+        <button onclick="aprovarPropostaPublica()" id="btn-aprovar-cliente" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-sm px-6 py-3 rounded-xl shadow-lg transition">
+          ✓ Aprovar Orçamento Agora
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main id="conteudo-principal" class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
     <!-- Coluna Esquerda -->
-    <section class="lg:col-span-5 space-y-6 no-print">
+    <section id="coluna-controles" class="lg:col-span-5 space-y-6 no-print">
+      
+      <!-- 1. Identificação + Pix -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex justify-between items-center border-b pb-2">
-          <h2 class="font-bold text-slate-700">1. Identificação</h2>
+          <h2 class="font-bold text-slate-700">1. Identificação e Recebimento</h2>
           <span id="status-cnpj" class="text-[11px] text-emerald-600 font-medium">Salvo automaticamente</span>
         </div>
         <div class="bg-slate-50 p-3 rounded-lg border border-dashed border-slate-300">
@@ -72,6 +90,24 @@
             <label class="block text-xs font-semibold text-slate-600 mb-1">Sua Empresa / Seu Nome Profissional</label>
             <input type="text" id="in-empresa" oninput="salvarEAtualizar()" placeholder="Ex: Silva Climatização & Elétrica" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
           </div>
+
+          <!-- Chave Pix Automática -->
+          <div class="bg-emerald-50/70 p-3 rounded-lg border border-emerald-200 grid grid-cols-3 gap-2">
+            <div class="col-span-2">
+              <label class="block text-xs font-semibold text-emerald-900 mb-1">Sua Chave Pix (Gera QR Code)</label>
+              <input type="text" id="in-pix" oninput="salvarERenderizar()" placeholder="CPF, CNPJ, Celular ou E-mail" class="w-full border border-emerald-300 bg-white rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-emerald-900 mb-1">% Entrada Pix</label>
+              <select id="in-pix-pct" onchange="salvarERenderizar()" class="w-full border border-emerald-300 bg-white rounded-lg px-2 py-1.5 text-xs focus:outline-none">
+                <option value="50">50% Sinal</option>
+                <option value="100">100% Total</option>
+                <option value="30">30% Sinal</option>
+                <option value="40">40% Sinal</option>
+              </select>
+            </div>
+          </div>
+
           <div class="grid grid-cols-3 gap-3">
             <div class="col-span-2">
               <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Cliente</label>
@@ -85,6 +121,7 @@
         </div>
       </div>
 
+      <!-- 2. Precificação -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex justify-between items-center border-b pb-2">
           <h2 class="font-bold text-slate-700">2. Precificação Inteligente</h2>
@@ -106,6 +143,7 @@
         </div>
       </div>
 
+      <!-- 3. Itens e Serviços -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <h2 class="font-bold text-slate-700 border-b pb-2">3. Itens e Serviços</h2>
         <div class="space-y-3">
@@ -119,16 +157,31 @@
         <div id="lista-controle" class="divide-y divide-slate-100 text-xs max-h-48 overflow-y-auto"></div>
       </div>
 
+      <!-- 4. Condições e Envio -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <h2 class="font-bold text-slate-700 border-b pb-2">4. Condições Comerciais</h2>
+        <h2 class="font-bold text-slate-700 border-b pb-2">4. Condições e Envio Rápido</h2>
         <div class="grid grid-cols-2 gap-3">
           <div><label class="block text-xs font-semibold text-slate-600 mb-1">Validade da Proposta</label><input type="text" id="in-validade" value="7 dias corridos" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
           <div><label class="block text-xs font-semibold text-slate-600 mb-1">Forma de Pagamento</label><input type="text" id="in-pagamento" value="50% entrada + 50% entrega" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
         </div>
         <div><label class="block text-xs font-semibold text-slate-600 mb-1">Observações / Garantia</label><textarea id="in-obs" rows="2" oninput="salvarEAtualizar()" placeholder="Ex: Garantia de 90 dias sobre os serviços executados." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea></div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button onclick="salvarNaNuvem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 rounded-xl shadow transition text-sm">Salvar na Nuvem</button>
-          <button onclick="gerarPDF()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md transition text-sm">Gerar PDF</button>
+        
+        <div class="space-y-2.5 pt-1">
+          <div class="grid grid-cols-2 gap-2.5">
+            <button onclick="salvarNaNuvem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 rounded-xl shadow transition text-xs sm:text-sm">
+              Salvar na Nuvem
+            </button>
+            <button onclick="gerarPDF()" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl shadow transition text-xs sm:text-sm">
+              Gerar PDF (A4)
+            </button>
+          </div>
+          <button onclick="enviarWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2">
+            <span>Enviar Proposta no WhatsApp</span>
+          </button>
+          <button onclick="copiarLinkAprovacao()" id="btn-link-aprovacao" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-semibold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1.5">
+            <span>🔗 Copiar Link de Aprovação Online</span>
+            <span id="badge-link-pro" class="bg-amber-200 text-amber-900 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">PRO</span>
+          </button>
         </div>
       </div>
     </section>
@@ -137,7 +190,7 @@
     <section id="coluna-preview" class="lg:col-span-7">
       <div class="mb-2 flex justify-between items-center no-print">
         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pré-visualização do Documento (A4)</span>
-        <span class="text-xs text-slate-400">Os custos internos ficam ocultos aqui</span>
+        <span id="status-badge-doc" class="text-xs text-slate-400">Os custos internos ficam ocultos aqui</span>
       </div>
 
       <div id="area-impressao" class="relative overflow-hidden bg-white p-10 rounded-xl shadow-lg border border-slate-200 min-h-[840px] flex flex-col justify-between">
@@ -155,6 +208,14 @@
         </div>
 
         <div class="relative z-10">
+          <!-- Selo de Aprovado Online (quando o cliente aprova) -->
+          <div id="selo-aprovado-online" class="hidden mb-6 bg-emerald-50 border-2 border-emerald-500 rounded-xl p-3 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="bg-emerald-600 text-white text-xs font-black px-2.5 py-1 rounded uppercase">✓ Aprovado Online</span>
+              <span id="texto-aprovado-detalhes" class="text-xs text-emerald-900 font-medium"></span>
+            </div>
+          </div>
+
           <div class="flex justify-between items-start border-b-2 border-slate-800 pb-6 gap-4">
             <div class="flex items-center gap-4">
               <img id="out-logo" src="" alt="Logo" class="hidden h-16 w-auto object-contain rounded">
@@ -170,10 +231,12 @@
               <p class="text-xs text-slate-500">Validade: <span id="out-validade">7 dias corridos</span></p>
             </div>
           </div>
+
           <div class="my-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
             <span class="text-[11px] font-bold uppercase text-slate-400 block">Preparado para:</span>
             <p id="out-cliente" class="text-base font-bold text-slate-800">Nome do Cliente</p>
           </div>
+
           <table class="w-full text-left border-collapse mt-4">
             <thead>
               <tr class="border-b-2 border-slate-300 text-xs uppercase text-slate-500">
@@ -187,6 +250,7 @@
               <tr><td colspan="4" class="py-8 text-center text-slate-400 italic">Adicione itens ao lado para visualizar o orçamento...</td></tr>
             </tbody>
           </table>
+
           <div class="mt-6 flex justify-end">
             <div class="w-64 bg-slate-900 text-white p-4 rounded-lg">
               <div class="flex justify-between items-center">
@@ -195,9 +259,21 @@
               </div>
             </div>
           </div>
-          <div class="mt-8 space-y-3 text-sm text-slate-700 border-t pt-6">
-            <div><strong class="text-slate-900">Condições de Pagamento:</strong> <span id="out-pagamento">50% entrada + 50% entrega</span></div>
-            <div id="box-obs" class="hidden"><strong class="text-slate-900">Observações e Garantia:</strong><p id="out-obs" class="text-slate-600 mt-1"></p></div>
+
+          <!-- Condições + Bloco QR Code Pix Automático -->
+          <div class="mt-8 border-t pt-6 grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
+            <div class="sm:col-span-8 space-y-3 text-sm text-slate-700">
+              <div><strong class="text-slate-900">Condições de Pagamento:</strong> <span id="out-pagamento">50% entrada + 50% entrega</span></div>
+              <div id="box-obs" class="hidden"><strong class="text-slate-900">Observações e Garantia:</strong><p id="out-obs" class="text-slate-600 mt-1"></p></div>
+            </div>
+
+            <!-- Caixa Pix com QR Code -->
+            <div id="box-pix-pdf" class="hidden sm:col-span-4 bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 block">Pagamento Rápido Pix</span>
+              <span id="out-pix-valor" class="text-xs font-bold text-slate-800 block mb-1.5">Entrada: R$ 0,00</span>
+              <img id="out-pix-qr" src="" alt="QR Code Pix" class="w-28 h-28 mx-auto bg-white p-1 rounded border border-slate-200">
+              <span id="out-pix-chave" class="text-[10px] text-slate-500 block mt-1.5 break-all"></span>
+            </div>
           </div>
         </div>
 
@@ -229,7 +305,7 @@
   <div id="modal-historico" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
     <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[80vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-3">
-        <div><h3 class="text-lg font-bold text-slate-900">Meus Orçamentos Salvos</h3><p class="text-[11px] text-slate-500">Excluir um orçamento não afeta a numeração sequencial dos próximos.</p></div>
+        <div><h3 class="text-lg font-bold text-slate-900">Meus Orçamentos Salvos</h3><p class="text-[11px] text-slate-500">Acompanhe o status de aprovação online dos seus clientes.</p></div>
         <button onclick="fecharHistorico()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
       </div>
       <div id="lista-historico-nuvem" class="overflow-y-auto divide-y divide-slate-100 flex-1 text-sm"><p class="text-center text-slate-400 py-8">Carregando orçamentos...</p></div>
@@ -255,6 +331,7 @@
       <ul class="text-sm text-slate-600 space-y-2">
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Adicione o <strong>Logotipo da sua empresa</strong> no topo</li>
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Remova completamente a marca d'água de demonstração</li>
+        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> <strong>Link de Aprovação Online</strong> com aceite digital do cliente</li>
         <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Orçamentos ilimitados salvos na sua conta</li>
       </ul>
       <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-sm text-emerald-900">
@@ -268,6 +345,8 @@
 
   <script>
     let ultimoCnpjBuscado = '';
+    let orcamentoSalvoIdAtual = null;
+    let propostaPublicaId = null;
 
     function maskTel(el) {
       let n = el.value.replace(/\D/g, '').substring(0, 11);
@@ -305,9 +384,7 @@
         if (!resp.ok) throw new Error('Não encontrado');
         const dados = await resp.json();
         const nomeEmpresa = (dados.nome_fantasia && dados.nome_fantasia.trim()) ? dados.nome_fantasia : dados.razao_social;
-        if (nomeEmpresa) {
-          document.getElementById('in-empresa').value = nomeEmpresa;
-        }
+        if (nomeEmpresa) document.getElementById('in-empresa').value = nomeEmpresa;
         if (dados.ddd_telefone_1) {
           const elTel = document.getElementById('in-contato');
           elTel.value = dados.ddd_telefone_1;
@@ -324,10 +401,7 @@
 
     function maskMoeda(el) {
       let n = el.value.replace(/\D/g, '');
-      if (!n) {
-        el.value = '';
-        return;
-      }
+      if (!n) { el.value = ''; return; }
       let valor = parseInt(n, 10) / 100;
       el.value = valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
@@ -339,6 +413,65 @@
       return parseInt(limpo, 10) / 100;
     }
 
+    // GERADOR OFICIAL DE PAYLOAD PIX (PADRÃO EMV BACEN)
+    function gerarPayloadPix(chave, nomeRecebedor, valor) {
+      const formatarCampo = (id, val) => id + String(val.length).padStart(2, '0') + val;
+      const limparTexto = (str, max) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9 ]/g, '').trim().substring(0, max) || 'ORCAFACIL';
+      
+      let chaveTratada = chave.trim();
+      if (/^\(\d{2}\)\s?\d{4,5}-\d{4}$/.test(chaveTratada)) {
+        chaveTratada = '+55' + chaveTratada.replace(/\D/g, '');
+      }
+
+      const gui = formatarCampo('00', 'br.gov.bcb.pix');
+      const key = formatarCampo('01', chaveTratada);
+      const merchantAccount = formatarCampo('26', gui + key);
+      const valorStr = valor > 0 ? formatarCampo('54', valor.toFixed(2)) : '';
+      const nome = limparTexto(nomeRecebedor, 25);
+      const txid = formatarCampo('62', formatarCampo('05', '***'));
+
+      const payloadSemCrc =
+        formatarCampo('00', '01') +
+        merchantAccount +
+        formatarCampo('52', '0000') +
+        formatarCampo('53', '986') +
+        valorStr +
+        formatarCampo('58', 'BR') +
+        formatarCampo('59', nome) +
+        formatarCampo('60', 'BRASIL') +
+        txid +
+        '6304';
+
+      // Cálculo CRC16 CCITT-FALSE
+      let crc = 0xFFFF;
+      for (let i = 0; i < payloadSemCrc.length; i++) {
+        crc ^= payloadSemCrc.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+        }
+      }
+      const crcHex = (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+      return payloadSemCrc + crcHex;
+    }
+
+    function atualizarBlocoPix(totalVenda) {
+      const chave = document.getElementById('in-pix').value.trim();
+      const boxPix = document.getElementById('box-pix-pdf');
+      if (!chave || totalVenda <= 0) {
+        boxPix.classList.add('hidden');
+        return;
+      }
+      const pct = parseFloat(document.getElementById('in-pix-pct').value) || 50;
+      const valorEntrada = totalVenda * (pct / 100);
+      const empresa = document.getElementById('in-empresa').value || 'Prestador';
+      const payload = gerarPayloadPix(chave, empresa, valorEntrada);
+      
+      document.getElementById('out-pix-valor').innerText = `Entrada (${pct}%): ${formatarMoeda(valorEntrada)}`;
+      document.getElementById('out-pix-chave').innerText = `Chave: ${chave}`;
+      document.getElementById('out-pix-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(payload)}`;
+      boxPix.classList.remove('hidden');
+    }
+
     const SUPABASE_URL = 'https://qnswdcfjracnvwzpyuqd.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_Yj80fcLqM8CFd14RTUwaEg_MxOEYgC2';
     let sb = null;
@@ -348,12 +481,82 @@
 
     window.onload = async function() {
       document.getElementById('out-data').innerText = new Date().toLocaleDateString('pt-BR');
+      
+      // Verifica se é o link público de aprovação do cliente (?proposta=UUID)
+      const params = new URLSearchParams(window.location.search);
+      const idPropostaUrl = params.get('proposta');
+      if (idPropostaUrl && sb) {
+        await carregarModoPublicoCliente(idPropostaUrl);
+        return;
+      }
+
       carregarRascunhoLocal();
       if (!sb) return;
       const { data: { session } } = await sb.auth.getSession();
       if (session) await configurarUsuarioLogado(session.user);
       sb.auth.onAuthStateChange(async (_e, s) => s ? await configurarUsuarioLogado(s.user) : configurarUsuarioDeslogado());
     };
+
+    // MODO PÚBLICO DO CLIENTE (LINK DE APROVAÇÃO)
+    async function carregarModoPublicoCliente(id) {
+      propostaPublicaId = id;
+      document.getElementById('barra-topo').classList.add('hidden');
+      document.getElementById('coluna-controles').classList.add('hidden');
+      document.getElementById('coluna-preview').classList.replace('lg:col-span-7', 'lg:col-span-12');
+      document.getElementById('coluna-preview').classList.add('max-w-4xl', 'mx-auto', 'w-full');
+      document.getElementById('banner-cliente-publico').classList.remove('hidden');
+      document.getElementById('marca-dagua').classList.add('hidden');
+      document.getElementById('marca-dagua-diagonal').classList.add('hidden');
+
+      const { data: orc, error } = await sb.from('orcamentos').select('*').eq('id', id).single();
+      if (error || !orc || !orc.dados_json) {
+        document.getElementById('banner-cliente-publico').innerHTML = '<div class="max-w-4xl mx-auto text-center text-red-400 font-bold">Proposta não encontrada ou removida pelo prestador.</div>';
+        return;
+      }
+
+      const d = orc.dados_json;
+      document.getElementById('in-empresa').value = d.empresa || '';
+      document.getElementById('in-contato').value = d.contato || '';
+      document.getElementById('in-doc').value = d.doc || '';
+      document.getElementById('in-cliente').value = d.cliente || '';
+      document.getElementById('in-num').value = d.numero || '#001';
+      document.getElementById('in-margem').value = d.margem || 30;
+      document.getElementById('in-imposto').value = d.imposto || 6;
+      document.getElementById('in-validade').value = d.validade || '';
+      document.getElementById('in-pagamento').value = d.pagamento || '';
+      document.getElementById('in-obs').value = d.obs || '';
+      document.getElementById('in-pix').value = d.pix || '';
+      document.getElementById('in-pix-pct').value = d.pixPct || '50';
+      document.getElementById('out-data').innerText = new Date(orc.created_at).toLocaleDateString('pt-BR');
+      itens = d.itens || [];
+
+      atualizarPreview();
+      renderizarItens();
+
+      if (orc.status === 'Aprovado') {
+        exibirEstadoAprovado(orc.aprovado_em);
+      }
+    }
+
+    async function aprovarPropostaPublica() {
+      if (!propostaPublicaId) return;
+      if (!confirm('Confirma a aprovação desta proposta comercial?')) return;
+      const agora = new Date().toISOString();
+      const { error } = await sb.from('orcamentos').update({ status: 'Aprovado', aprovado_em: agora }).eq('id', propostaPublicaId);
+      if (error) {
+        alert('Não foi possível registrar a aprovação: ' + error.message);
+      } else {
+        exibirEstadoAprovado(agora);
+        alert('Proposta aprovada com sucesso! O prestador já pode visualizar sua aprovação.');
+      }
+    }
+
+    function exibirEstadoAprovado(dataIso) {
+      const dataFormatada = dataIso ? new Date(dataIso).toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
+      document.getElementById('box-acao-aprovacao').innerHTML = `<span class="bg-emerald-500/20 border border-emerald-400 text-emerald-300 font-bold text-xs px-4 py-2 rounded-lg">✓ Orçamento Aprovado em ${dataFormatada}</span>`;
+      document.getElementById('selo-aprovado-online').classList.remove('hidden');
+      document.getElementById('texto-aprovado-detalhes').innerText = `Aceite digital registrado em ${dataFormatada}`;
+    }
 
     function formatarNumeroSequencial(num) { return '#' + String(num).padStart(3, '0'); }
 
@@ -402,19 +605,27 @@
       else { localStorage.clear(); await sb.auth.signOut(); alert('Conta excluída.'); location.reload(); }
     }
 
-    async function salvarNaNuvem() {
-      if (!currentUser) return abrirModalAuth();
+    async function salvarNaNuvem(silencioso = false) {
+      if (!currentUser) {
+        abrirModalAuth();
+        return null;
+      }
       const cliente = document.getElementById('in-cliente').value.trim() || 'Cliente sem nome';
       const numero = document.getElementById('in-num').value || formatarNumeroSequencial(ultimoNumeroSalvo + 1);
       const pacoteDados = {
         empresa: document.getElementById('in-empresa').value, contato: document.getElementById('in-contato').value,
-        doc: document.getElementById('in-doc').value, cliente, numero,
+        doc: document.getElementById('in-doc').value, pix: document.getElementById('in-pix').value,
+        pixPct: document.getElementById('in-pix-pct').value, cliente, numero,
         margem: document.getElementById('in-margem').value, imposto: document.getElementById('in-imposto').value,
         validade: document.getElementById('in-validade').value, pagamento: document.getElementById('in-pagamento').value,
         obs: document.getElementById('in-obs').value, itens
       };
-      const { error } = await sb.from('orcamentos').insert([{ user_id: currentUser.id, numero, cliente, valor_total: totalAtual, dados_json: pacoteDados }]);
-      if (error) return alert('Erro ao salvar: ' + error.message);
+      const { data, error } = await sb.from('orcamentos').insert([{ user_id: currentUser.id, numero, cliente, valor_total: totalAtual, dados_json: pacoteDados }]).select().single();
+      if (error) {
+        alert('Erro ao salvar: ' + error.message);
+        return null;
+      }
+      orcamentoSalvoIdAtual = data.id;
       const numExtraido = parseInt(numero.replace(/\D/g, ''), 10);
       if (!isNaN(numExtraido) && numExtraido > ultimoNumeroSalvo) {
         ultimoNumeroSalvo = numExtraido;
@@ -422,7 +633,51 @@
         document.getElementById('in-num').value = formatarNumeroSequencial(ultimoNumeroSalvo + 1);
         atualizarPreview();
       }
-      alert(`Orçamento ${numero} salvo! Próximo número: ${document.getElementById('in-num').value}.`);
+      if (!silencioso) {
+        alert(`Orçamento ${numero} salvo! Próximo número: ${document.getElementById('in-num').value}.`);
+      }
+      return data.id;
+    }
+
+    async function copiarLinkAprovacao() {
+      if (!isPro) return abrirModalPro();
+      if (!currentUser) return abrirModalAuth();
+      if (itens.length === 0) return alert('Adicione pelo menos um item ao orçamento antes de gerar o link de aprovação.');
+
+      let idParaLink = orcamentoSalvoIdAtual;
+      if (!idParaLink) {
+        idParaLink = await salvarNaNuvem(true);
+      }
+      if (!idParaLink) return;
+
+      const urlBase = window.location.origin + window.location.pathname;
+      const linkCompleto = `${urlBase}?proposta=${idParaLink}`;
+      await navigator.clipboard.writeText(linkCompleto);
+      alert('Link de aprovação copiado!\n\nEnvie para seu cliente. Quando ele clicar em "Aprovar Orçamento", o status será atualizado automaticamente no seu histórico.');
+    }
+
+    function enviarWhatsApp() {
+      const cliente = document.getElementById('in-cliente').value.trim() || 'Cliente';
+      const empresa = document.getElementById('in-empresa').value.trim() || 'nossa equipe';
+      const num = document.getElementById('in-num').value || '#001';
+      const validade = document.getElementById('in-validade').value || '7 dias';
+      const pagamento = document.getElementById('in-pagamento').value || 'A combinar';
+
+      if (itens.length === 0) return alert('Adicione pelo menos um item antes de enviar pelo WhatsApp.');
+
+      const margem = parseFloat(document.getElementById('in-margem').value) || 0;
+      const imposto = parseFloat(document.getElementById('in-imposto').value) || 0;
+      const fator = 1 + (margem / 100) + (imposto / 100);
+
+      let resumoItens = itens.map(i => `• ${i.qtd}x ${i.desc} — ${formatarMoeda(i.custo * fator * i.qtd)}`).join('\n');
+      let texto = `Olá, *${cliente}*! Tudo bem?\n\nSegue o resumo da *Proposta ${num}* preparada por *${empresa}*:\n\n${resumoItens}\n\n*Investimento Total:* ${formatarMoeda(totalAtual)}\n*Condições:* ${pagamento}\n*Validade:* ${validade}`;
+
+      if (isPro && orcamentoSalvoIdAtual) {
+        const urlBase = window.location.origin + window.location.pathname;
+        texto += `\n\n✅ *Para visualizar e aprovar online com 1 clique, acesse:*\n${urlBase}?proposta=${orcamentoSalvoIdAtual}`;
+      }
+
+      window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
     }
 
     async function abrirHistorico() {
@@ -431,15 +686,23 @@
       container.innerHTML = '<p class="text-center text-slate-400 py-8">Buscando seus orçamentos...</p>';
       const { data, error } = await sb.from('orcamentos').select('*').order('created_at', { ascending: false });
       if (error || !data || data.length === 0) { container.innerHTML = '<p class="text-center text-slate-400 py-8">Nenhum orçamento salvo ainda.</p>'; return; }
-      container.innerHTML = data.map(orc => `
+      container.innerHTML = data.map(orc => {
+        const aprovado = orc.status === 'Aprovado';
+        const badgeStatus = aprovado
+          ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase ml-2">✓ Aprovado</span>`
+          : `<span class="bg-slate-100 text-slate-600 text-[10px] font-semibold px-2 py-0.5 rounded uppercase ml-2">Pendente</span>`;
+        return `
         <div id="orc-item-${orc.id}" class="py-3 flex justify-between items-center gap-4">
-          <div><span class="font-bold text-slate-800">${orc.numero} — ${orc.cliente}</span>
-          <span class="text-xs text-slate-500 block">Data: ${new Date(orc.created_at).toLocaleDateString('pt-BR')} • Total: <strong class="text-emerald-600">${formatarMoeda(orc.valor_total || 0)}</strong></span></div>
+          <div>
+            <span class="font-bold text-slate-800">${orc.numero} — ${orc.cliente}</span>${badgeStatus}
+            <span class="text-xs text-slate-500 block mt-0.5">Data: ${new Date(orc.created_at).toLocaleDateString('pt-BR')} • Total: <strong class="text-emerald-600">${formatarMoeda(orc.valor_total || 0)}</strong></span>
+          </div>
           <div class="flex items-center gap-2 shrink-0">
-            <button onclick='carregarOrcamentoSalvo(${JSON.stringify(orc.dados_json)})' class="bg-slate-800 hover:bg-slate-900 text-white text-xs px-3 py-2 rounded-lg font-medium">Abrir / Editar</button>
+            <button onclick='carregarOrcamentoSalvo(${JSON.stringify(orc.dados_json)}, "${orc.id}", "${orc.status || 'Pendente'}", "${orc.aprovado_em || ''}")' class="bg-slate-800 hover:bg-slate-900 text-white text-xs px-3 py-2 rounded-lg font-medium">Abrir</button>
             <button onclick="excluirOrcamento('${orc.id}', '${orc.numero}')" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs px-3 py-2 rounded-lg font-medium">Excluir</button>
           </div>
-        </div>`).join('');
+        </div>`;
+      }).join('');
     }
 
     async function excluirOrcamento(id, numero) {
@@ -448,13 +711,16 @@
       if (error) alert('Erro: ' + error.message); else document.getElementById(`orc-item-${id}`)?.remove();
     }
 
-    function carregarOrcamentoSalvo(dados) {
+    function carregarOrcamentoSalvo(dados, idOrc = null, statusOrc = 'Pendente', aprovadoEm = '') {
       if (!dados) return;
+      orcamentoSalvoIdAtual = idOrc;
       document.getElementById('in-empresa').value = dados.empresa || '';
       const elTel = document.getElementById('in-contato'); elTel.value = dados.contato || ''; maskTel(elTel);
       const elDoc = document.getElementById('in-doc');
       ultimoCnpjBuscado = (dados.doc || '').replace(/\D/g, '');
       elDoc.value = dados.doc || ''; maskDoc(elDoc);
+      document.getElementById('in-pix').value = dados.pix || '';
+      document.getElementById('in-pix-pct').value = dados.pixPct || '50';
       document.getElementById('in-cliente').value = dados.cliente || '';
       document.getElementById('in-num').value = dados.numero || '#001';
       document.getElementById('in-margem').value = dados.margem || 30;
@@ -463,13 +729,20 @@
       document.getElementById('in-pagamento').value = dados.pagamento || '';
       document.getElementById('in-obs').value = dados.obs || '';
       itens = dados.itens || [];
+
+      if (statusOrc === 'Aprovado') {
+        exibirEstadoAprovado(aprovadoEm);
+      } else {
+        document.getElementById('selo-aprovado-online').classList.add('hidden');
+      }
+
       atualizarPreview(); renderizarItens(); fecharHistorico();
     }
 
     function fecharHistorico() { document.getElementById('modal-historico').classList.replace('flex', 'hidden'); }
 
     function carregarRascunhoLocal() {
-      ['in-empresa', 'in-contato', 'in-doc', 'in-margem', 'in-imposto', 'in-validade', 'in-pagamento', 'in-obs'].forEach(id => {
+      ['in-empresa', 'in-contato', 'in-doc', 'in-pix', 'in-pix-pct', 'in-margem', 'in-imposto', 'in-validade', 'in-pagamento', 'in-obs'].forEach(id => {
         const salvo = localStorage.getItem('orcafacil_' + id);
         if (salvo !== null) {
           const el = document.getElementById(id);
@@ -492,6 +765,8 @@
     function salvarERenderizar() {
       localStorage.setItem('orcafacil_in-margem', document.getElementById('in-margem').value);
       localStorage.setItem('orcafacil_in-imposto', document.getElementById('in-imposto').value);
+      localStorage.setItem('orcafacil_in-pix', document.getElementById('in-pix').value);
+      localStorage.setItem('orcafacil_in-pix-pct', document.getElementById('in-pix-pct').value);
       renderizarItens();
     }
 
@@ -528,6 +803,7 @@
       const obs = document.getElementById('in-obs').value, boxObs = document.getElementById('box-obs');
       if (obs.trim()) { boxObs.classList.remove('hidden'); document.getElementById('out-obs').innerText = obs; }
       else boxObs.classList.add('hidden');
+      atualizarBlocoPix(totalAtual);
     }
 
     function adicionarItem() {
@@ -535,13 +811,18 @@
       const qtd = parseFloat(document.getElementById('item-qtd').value) || 1;
       const custo = lerValorMoeda(document.getElementById('item-custo').value);
       if (!desc || custo <= 0) return alert('Preencha a descrição e um custo válido maior que zero.');
+      orcamentoSalvoIdAtual = null;
       itens.push({ id: Date.now(), desc, qtd, custo });
       document.getElementById('item-desc').value = '';
       document.getElementById('item-custo').value = '';
       renderizarItens();
     }
 
-    function removerItem(id) { itens = itens.filter(i => i.id !== id); renderizarItens(); }
+    function removerItem(id) {
+      orcamentoSalvoIdAtual = null;
+      itens = itens.filter(i => i.id !== id);
+      renderizarItens();
+    }
 
     function renderizarItens() {
       const margem = parseFloat(document.getElementById('in-margem').value) || 0, imposto = parseFloat(document.getElementById('in-imposto').value) || 0;
@@ -553,6 +834,7 @@
         document.getElementById('out-total').innerText = 'R$ 0,00';
         document.getElementById('res-custo').innerText = 'R$ 0,00';
         document.getElementById('res-lucro').innerText = 'R$ 0,00';
+        atualizarBlocoPix(0);
         return;
       }
       let htmlPdf = '', htmlControle = '', custoTotal = 0, vendaTotal = 0;
@@ -568,6 +850,7 @@
       document.getElementById('out-total').innerText = formatarMoeda(vendaTotal);
       document.getElementById('res-custo').innerText = formatarMoeda(custoTotal);
       document.getElementById('res-lucro').innerText = formatarMoeda(lucro);
+      atualizarBlocoPix(vendaTotal);
     }
 
     function gerarPDF() {
@@ -590,6 +873,9 @@
       document.getElementById('badge-plano').classList.replace('bg-slate-700', 'bg-emerald-900');
       document.getElementById('badge-plano').classList.replace('text-slate-300', 'text-emerald-300');
       document.getElementById('btn-upgrade').classList.add('hidden');
+      document.getElementById('badge-link-pro').innerText = 'Ativo';
+      document.getElementById('badge-link-pro').classList.replace('bg-amber-200', 'bg-emerald-200');
+      document.getElementById('badge-link-pro').classList.replace('text-amber-900', 'text-emerald-900');
       const tagLogo = document.getElementById('tag-logo-pro');
       tagLogo.innerText = 'Liberado';
       tagLogo.classList.replace('bg-amber-100', 'bg-emerald-100');
