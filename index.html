@@ -65,7 +65,7 @@
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex justify-between items-center border-b pb-2">
           <h2 class="font-bold text-slate-700">1. Identificação e Recebimento</h2>
-          <span id="status-cnpj" class="text-[11px] text-emerald-600 font-medium">Salvo automaticamente</span>
+          <span class="text-[11px] text-emerald-600 font-medium">Salvo automaticamente</span>
         </div>
         <div class="bg-slate-50 p-3 rounded-lg border border-dashed border-slate-300">
           <div class="flex justify-between items-center mb-1">
@@ -76,19 +76,28 @@
           <button id="btn-remover-logo" onclick="removerLogo()" class="hidden text-[11px] text-red-500 underline mt-1">Remover logotipo</button>
         </div>
         <div class="grid grid-cols-1 gap-3">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">CNPJ / CPF <span class="text-emerald-600 font-normal">(Busca CNPJ)</span></label>
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="block text-xs font-semibold text-slate-600">CNPJ / CPF</label>
+              <span id="msg-cnpj" class="text-[11px] font-semibold"></span>
+            </div>
+            <div class="flex gap-2">
               <input type="text" id="in-doc" inputmode="numeric" oninput="maskDoc(this)" onkeyup="maskDoc(this)" placeholder="00.000.000/0000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+              <button type="button" onclick="acaoBuscarCNPJ()" id="btn-buscar-cnpj" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shrink-0">
+                Buscar
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Sua Empresa / Nome Profissional</label>
+              <input type="text" id="in-empresa" oninput="salvarEAtualizar()" placeholder="Ex: Silva Climatização" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">Seu WhatsApp / Contato</label>
               <input type="text" id="in-contato" inputmode="numeric" oninput="maskTel(this)" onkeyup="maskTel(this)" placeholder="(00) 00000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
             </div>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Sua Empresa / Seu Nome Profissional</label>
-            <input type="text" id="in-empresa" oninput="salvarEAtualizar()" placeholder="Ex: Silva Climatização & Elétrica" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
           </div>
 
           <!-- Chave Pix Automática -->
@@ -344,7 +353,6 @@
   </div>
 
   <script>
-    let ultimoCnpjBuscado = '';
     let orcamentoSalvoIdAtual = null;
     let propostaPublicaId = null;
 
@@ -367,22 +375,69 @@
         else el.value = n;
       } else {
         el.value = n.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2}).*/, '$1.$2.$3/$4-$5');
-        if (n.length === 14 && n !== ultimoCnpjBuscado) {
-          ultimoCnpjBuscado = n;
-          buscarDadosCNPJ(n);
-        }
       }
+      const msgEl = document.getElementById('msg-cnpj');
+      if (msgEl) msgEl.innerText = '';
       salvarEAtualizar();
     }
 
-    async function buscarDadosCNPJ(cnpjLimpo) {
-      const status = document.getElementById('status-cnpj');
-      status.innerText = 'Buscando dados do CNPJ...';
-      status.classList.replace('text-emerald-600', 'text-amber-600');
+    // VALIDAÇÃO MATEMÁTICA OFICIAL DE CNPJ (MÓDULO 11)
+    function validarCNPJ(cnpj) {
+      cnpj = cnpj.replace(/\D/g, '');
+      if (cnpj.length !== 14) return false;
+      if (/^(\d)\1+$/.test(cnpj)) return false;
+
+      let tamanho = cnpj.length - 2;
+      let numeros = cnpj.substring(0, tamanho);
+      let digitos = cnpj.substring(tamanho);
+      let soma = 0;
+      let pos = tamanho - 7;
+
+      for (let i = tamanho; i >= 1; i--) {
+        soma += parseInt(numeros.charAt(tamanho - i), 10) * pos--;
+        if (pos < 2) pos = 9;
+      }
+
+      let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+      if (resultado !== parseInt(digitos.charAt(0), 10)) return false;
+
+      tamanho = tamanho + 1;
+      numeros = cnpj.substring(0, tamanho);
+      soma = 0;
+      pos = tamanho - 7;
+
+      for (let i = tamanho; i >= 1; i--) {
+        soma += parseInt(numeros.charAt(tamanho - i), 10) * pos--;
+        if (pos < 2) pos = 9;
+      }
+
+      resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+      if (resultado !== parseInt(digitos.charAt(1), 10)) return false;
+
+      return true;
+    }
+
+    async function acaoBuscarCNPJ() {
+      const cnpjLimpo = document.getElementById('in-doc').value.replace(/\D/g, '');
+      const msgEl = document.getElementById('msg-cnpj');
+      const btn = document.getElementById('btn-buscar-cnpj');
+
+      if (!validarCNPJ(cnpjLimpo)) {
+        msgEl.innerText = 'CNPJ inválido';
+        msgEl.className = 'text-[11px] font-bold text-red-600';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = '...';
+      msgEl.innerText = 'Buscando...';
+      msgEl.className = 'text-[11px] font-semibold text-amber-600';
+
       try {
         const resp = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
         if (!resp.ok) throw new Error('Não encontrado');
         const dados = await resp.json();
+
         const nomeEmpresa = (dados.nome_fantasia && dados.nome_fantasia.trim()) ? dados.nome_fantasia : dados.razao_social;
         if (nomeEmpresa) document.getElementById('in-empresa').value = nomeEmpresa;
         if (dados.ddd_telefone_1) {
@@ -390,12 +445,16 @@
           elTel.value = dados.ddd_telefone_1;
           maskTel(elTel);
         }
+
         salvarEAtualizar();
-        status.innerText = 'Dados preenchidos via Receita!';
-        status.classList.replace('text-amber-600', 'text-emerald-600');
+        msgEl.innerText = 'CNPJ encontrado!';
+        msgEl.className = 'text-[11px] font-bold text-emerald-600';
       } catch (e) {
-        status.innerText = 'Salvo automaticamente';
-        status.classList.replace('text-amber-600', 'text-emerald-600');
+        msgEl.innerText = 'CNPJ não encontrado na base';
+        msgEl.className = 'text-[11px] font-bold text-red-600';
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Buscar';
       }
     }
 
@@ -442,7 +501,6 @@
         txid +
         '6304';
 
-      // Cálculo CRC16 CCITT-FALSE
       let crc = 0xFFFF;
       for (let i = 0; i < payloadSemCrc.length; i++) {
         crc ^= payloadSemCrc.charCodeAt(i) << 8;
@@ -482,7 +540,6 @@
     window.onload = async function() {
       document.getElementById('out-data').innerText = new Date().toLocaleDateString('pt-BR');
       
-      // Verifica se é o link público de aprovação do cliente (?proposta=UUID)
       const params = new URLSearchParams(window.location.search);
       const idPropostaUrl = params.get('proposta');
       if (idPropostaUrl && sb) {
@@ -497,7 +554,6 @@
       sb.auth.onAuthStateChange(async (_e, s) => s ? await configurarUsuarioLogado(s.user) : configurarUsuarioDeslogado());
     };
 
-    // MODO PÚBLICO DO CLIENTE (LINK DE APROVAÇÃO)
     async function carregarModoPublicoCliente(id) {
       propostaPublicaId = id;
       document.getElementById('barra-topo').classList.add('hidden');
@@ -717,7 +773,6 @@
       document.getElementById('in-empresa').value = dados.empresa || '';
       const elTel = document.getElementById('in-contato'); elTel.value = dados.contato || ''; maskTel(elTel);
       const elDoc = document.getElementById('in-doc');
-      ultimoCnpjBuscado = (dados.doc || '').replace(/\D/g, '');
       elDoc.value = dados.doc || ''; maskDoc(elDoc);
       document.getElementById('in-pix').value = dados.pix || '';
       document.getElementById('in-pix-pct').value = dados.pixPct || '50';
@@ -746,7 +801,6 @@
         const salvo = localStorage.getItem('orcafacil_' + id);
         if (salvo !== null) {
           const el = document.getElementById(id);
-          if (id === 'in-doc') ultimoCnpjBuscado = salvo.replace(/\D/g, '');
           el.value = salvo;
           if (id === 'in-contato') maskTel(el);
           if (id === 'in-doc') maskDoc(el);
