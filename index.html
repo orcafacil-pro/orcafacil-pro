@@ -19,7 +19,7 @@
 <body class="bg-slate-100 text-slate-800 font-sans">
 
   <!-- Barra Superior -->
-  <header id="barra-topo" class="bg-slate-900 text-white py-4 px-6 shadow-md no-print">
+  <header id="barra-topo" class="bg-slate-900 text-white py-4 px-6 shadow-md no-print relative z-40">
     <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
       <div>
         <h1 class="text-xl font-bold tracking-tight text-emerald-400">OrçaFácil <span class="text-white">Pro</span></h1>
@@ -47,37 +47,6 @@
     </div>
   </header>
 
-  <!-- Tela de Bloqueio para Visitantes Não Logados -->
-  <section id="tela-bloqueio-visitante" class="max-w-2xl mx-auto my-12 px-6 no-print">
-    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 sm:p-10 text-center space-y-6">
-      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black">
-        ✓
-      </div>
-      <div class="space-y-2">
-        <h2 class="text-2xl font-extrabold text-slate-900">Crie orçamentos profissionais em minutos</h2>
-        <p class="text-sm text-slate-600 max-w-md mx-auto">
-          Para começar a montar suas propostas, calcular sua margem real e gerar PDFs na nuvem, entre na sua conta ou cadastre-se gratuitamente agora.
-        </p>
-      </div>
-
-      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left max-w-md mx-auto space-y-2 text-xs text-slate-600">
-        <p class="font-bold text-slate-800 uppercase tracking-wider text-[11px]">O que você ganha ao criar sua conta grátis:</p>
-        <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Consulta automática de CNPJ pela Receita Federal</div>
-        <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Calculadora inteligente de margem e impostos</div>
-        <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Até <strong>2 orçamentos em PDF gratuitos</strong> para testar</div>
-      </div>
-
-      <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
-        <button onclick="abrirModalCadastro()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3.5 rounded-xl shadow-md transition">
-          Criar Conta Gratuita
-        </button>
-        <button onclick="abrirModalLogin()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold text-sm px-6 py-3.5 rounded-xl transition">
-          Já tenho conta (Entrar)
-        </button>
-      </div>
-    </div>
-  </section>
-
   <!-- Banner Exclusivo da Visão Pública do Cliente (Link de Aprovação) -->
   <div id="banner-cliente-publico" class="hidden bg-slate-900 text-white py-4 px-6 shadow-md no-print">
     <div class="max-w-4xl mx-auto flex flex-wrap justify-between items-center gap-4">
@@ -93,331 +62,364 @@
     </div>
   </div>
 
-  <!-- Área Principal do Sistema (Visível apenas após login ou via link público do cliente) -->
-  <main id="conteudo-principal" class="hidden max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
-    <!-- Coluna Esquerda -->
-    <section id="coluna-controles" class="lg:col-span-5 space-y-6 no-print">
-      
-      <!-- 1. Identificação -->
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <div class="flex justify-between items-center border-b pb-2">
-          <h2 class="font-bold text-slate-700">1. Identificação</h2>
-          <span class="text-[11px] text-emerald-600 font-medium">Salvo automaticamente</span>
+  <!-- Container Relativo que abriga o Sistema ao Fundo + Sobreposição de Login -->
+  <div class="relative min-h-[calc(100vh-76px)]">
+
+    <!-- Camada Flutuante de Bloqueio para Visitantes (Exibe a Interface Desfocada ao Fundo) -->
+    <div id="tela-bloqueio-visitante" class="fixed inset-x-0 bottom-0 top-[72px] z-30 bg-slate-900/45 backdrop-blur-[3px] flex items-center justify-center p-4 no-print overflow-y-auto">
+      <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-7 sm:p-9 text-center space-y-5 my-auto">
+        <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black shadow-sm">
+          ✓
         </div>
-        <div class="bg-slate-50 p-3 rounded-lg border border-dashed border-slate-300">
-          <div class="flex justify-between items-center mb-1">
-            <label class="text-xs font-semibold text-slate-700">Logotipo da Empresa (Topo do PDF)</label>
-            <span id="tag-logo-pro" class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold uppercase">Recurso PRO</span>
-          </div>
-          <input type="file" id="in-logo" accept="image/*" onchange="carregarLogo(event)" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700 cursor-pointer">
-          <button id="btn-remover-logo" onclick="removerLogo()" class="hidden text-[11px] text-red-500 underline mt-1">Remover logotipo</button>
+        <div class="space-y-1.5">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Crie orçamentos profissionais em minutos</h2>
+          <p class="text-xs sm:text-sm text-slate-600">
+            Entre na sua conta ou cadastre-se gratuitamente para preencher os campos ao fundo, calcular sua margem e baixar em PDF.
+          </p>
         </div>
 
-        <div class="grid grid-cols-1 gap-3">
-          <div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left space-y-2 text-xs text-slate-600">
+          <p class="font-bold text-slate-800 uppercase tracking-wider text-[10px]">Incluído na sua conta gratuita:</p>
+          <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Busca automática de dados pelo CNPJ</div>
+          <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Calculadora inteligente de margem e impostos</div>
+          <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Até <strong>2 orçamentos em PDF gratuitos</strong> para testar</div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-3 pt-1">
+          <button onclick="abrirModalCadastro()" class="w-full sm:w-auto flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-5 py-3.5 rounded-xl shadow-md transition">
+            Criar Conta Gratuita
+          </button>
+          <button onclick="abrirModalLogin()" class="w-full sm:w-auto flex-1 bg-slate-800 hover:bg-slate-900 text-white font-semibold text-sm px-5 py-3.5 rounded-xl transition">
+            Já tenho conta (Entrar)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Área Principal do Sistema (Visível ao fundo para visitantes e interativa após login) -->
+    <main id="conteudo-principal" inert class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 select-none">
+      <!-- Coluna Esquerda -->
+      <section id="coluna-controles" class="lg:col-span-5 space-y-6 no-print">
+        
+        <!-- 1. Identificação -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+          <div class="flex justify-between items-center border-b pb-2">
+            <h2 class="font-bold text-slate-700">1. Identificação</h2>
+            <span class="text-[11px] text-emerald-600 font-medium">Salvo automaticamente</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-dashed border-slate-300">
             <div class="flex justify-between items-center mb-1">
-              <label class="block text-xs font-semibold text-slate-600">CNPJ / CPF</label>
-              <span id="msg-cnpj" class="text-[11px] font-semibold"></span>
+              <label class="text-xs font-semibold text-slate-700">Logotipo da Empresa (Topo do PDF)</label>
+              <span id="tag-logo-pro" class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold uppercase">Recurso PRO</span>
+            </div>
+            <input type="file" id="in-logo" accept="image/*" onchange="carregarLogo(event)" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700 cursor-pointer">
+            <button id="btn-remover-logo" onclick="removerLogo()" class="hidden text-[11px] text-red-500 underline mt-1">Remover logotipo</button>
+          </div>
+
+          <div class="grid grid-cols-1 gap-3">
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="block text-xs font-semibold text-slate-600">CNPJ / CPF</label>
+                <span id="msg-cnpj" class="text-[11px] font-semibold"></span>
+              </div>
+              <div class="flex gap-2">
+                <input type="text" id="in-doc" inputmode="numeric" oninput="maskDoc(this)" onkeyup="maskDoc(this)" placeholder="00.000.000/0000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                <button type="button" onclick="acaoBuscarCNPJ()" id="btn-buscar-cnpj" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shrink-0">
+                  Buscar
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Empresa / Nome Profissional</label>
+                <input type="text" id="in-empresa" oninput="salvarEAtualizar()" placeholder="Ex: Silva Climatização" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">WhatsApp / Contato</label>
+                <input type="text" id="in-contato" inputmode="numeric" oninput="maskTel(this)" onkeyup="maskTel(this)" placeholder="(00) 00000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-3">
+              <div class="col-span-7">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Cliente</label>
+                <input type="text" id="in-cliente" oninput="atualizarPreview()" placeholder="Ex: Construtora Horizonte" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+              </div>
+              <div class="col-span-5">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Nº / Ano Orçamento</label>
+                <input type="text" id="in-num" value="#0001/2026" oninput="atualizarPreview()" class="w-full border border-slate-300 rounded-lg px-2 py-2 text-sm text-center font-mono">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Modo de Precificação (2 Opções Exclusivas) -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+          <div class="flex justify-between items-center border-b pb-2">
+            <h2 class="font-bold text-slate-700">2. Modo de Precificação</h2>
+            <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">Escolha 1 opção</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl">
+            <button type="button" id="btn-modo-direto" onclick="definirModoPreco('direto')" class="py-2 px-3 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm">
+              Já sei o preço final
+            </button>
+            <button type="button" id="btn-modo-calculadora" onclick="definirModoPreco('calculadora')" class="py-2 px-3 rounded-lg text-xs font-semibold transition text-slate-500 hover:text-slate-800">
+              Calcular minha margem
+            </button>
+          </div>
+
+          <div id="painel-modo-direto" class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs text-slate-600">
+            Você informa diretamente o <strong>preço final de venda</strong> de cada item ou serviço na seção abaixo.
+          </div>
+
+          <div id="painel-modo-calculadora" class="hidden space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-[11px] text-slate-500">Informe seu custo nos itens e o sistema calcula a venda:</span>
+              <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold uppercase">Invisível no PDF</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Margem de Lucro (%)</label>
+                <input type="number" id="in-margem" value="30" min="0" max="500" oninput="salvarERenderizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-emerald-700">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Impostos / Taxas (%)</label>
+                <input type="number" id="in-imposto" value="6" min="0" max="100" oninput="salvarERenderizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+              </div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-between text-xs">
+              <div><span class="text-slate-500 block">Custo Base Total:</span><strong id="res-custo" class="text-slate-700 text-sm">R$ 0,00</strong></div>
+              <div class="text-right"><span class="text-slate-500 block">Lucro Líquido Estimado:</span><strong id="res-lucro" class="text-emerald-600 text-sm">R$ 0,00</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Itens e Serviços (Com Edição) -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+          <div class="flex justify-between items-center border-b pb-2">
+            <h2 class="font-bold text-slate-700">3. Itens e Serviços</h2>
+            <span id="badge-editando" class="hidden text-[11px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">Editando item</span>
+          </div>
+          <div class="space-y-3">
+            <input type="text" id="item-desc" placeholder="Descrição do serviço ou material" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">Quantidade</label>
+                <input type="number" id="item-qtd" value="1" min="1" step="any" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+              </div>
+              <div>
+                <label id="label-valor-item" class="block text-xs text-slate-500 mb-1">Preço Unitário de Venda (R$)</label>
+                <input type="text" id="item-custo" inputmode="numeric" oninput="maskMoeda(this)" onkeyup="maskMoeda(this)" placeholder="R$ 0,00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-slate-800">
+              </div>
             </div>
             <div class="flex gap-2">
-              <input type="text" id="in-doc" inputmode="numeric" oninput="maskDoc(this)" onkeyup="maskDoc(this)" placeholder="00.000.000/0000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
-              <button type="button" onclick="acaoBuscarCNPJ()" id="btn-buscar-cnpj" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shrink-0">
-                Buscar
+              <button type="button" id="btn-salvar-item" onclick="adicionarOuAtualizarItem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium text-sm py-2.5 rounded-lg transition">
+                + Adicionar Item ao Orçamento
+              </button>
+              <button type="button" id="btn-cancelar-edicao" onclick="cancelarEdicaoItem()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium text-xs px-4 py-2.5 rounded-lg transition">
+                Cancelar
               </button>
             </div>
           </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Empresa / Nome Profissional</label>
-              <input type="text" id="in-empresa" oninput="salvarEAtualizar()" placeholder="Ex: Silva Climatização" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">WhatsApp / Contato</label>
-              <input type="text" id="in-contato" inputmode="numeric" oninput="maskTel(this)" onkeyup="maskTel(this)" placeholder="(00) 00000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-12 gap-3">
-            <div class="col-span-7">
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Cliente</label>
-              <input type="text" id="in-cliente" oninput="atualizarPreview()" placeholder="Ex: Construtora Horizonte" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-            </div>
-            <div class="col-span-5">
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Nº / Ano Orçamento</label>
-              <input type="text" id="in-num" value="#0001/2026" oninput="atualizarPreview()" class="w-full border border-slate-300 rounded-lg px-2 py-2 text-sm text-center font-mono">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. Modo de Precificação (2 Opções Exclusivas) -->
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <div class="flex justify-between items-center border-b pb-2">
-          <h2 class="font-bold text-slate-700">2. Modo de Precificação</h2>
-          <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">Escolha 1 opção</span>
+          <div id="lista-controle" class="divide-y divide-slate-100 text-xs max-h-56 overflow-y-auto"></div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl">
-          <button type="button" id="btn-modo-direto" onclick="definirModoPreco('direto')" class="py-2 px-3 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm">
-            Já sei o preço final
-          </button>
-          <button type="button" id="btn-modo-calculadora" onclick="definirModoPreco('calculadora')" class="py-2 px-3 rounded-lg text-xs font-semibold transition text-slate-500 hover:text-slate-800">
-            Calcular minha margem
-          </button>
-        </div>
-
-        <div id="painel-modo-direto" class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs text-slate-600">
-          Você informa diretamente o <strong>preço final de venda</strong> de cada item ou serviço na seção abaixo.
-        </div>
-
-        <div id="painel-modo-calculadora" class="hidden space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-[11px] text-slate-500">Informe seu custo nos itens e o sistema calcula a venda:</span>
-            <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold uppercase">Invisível no PDF</span>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Margem de Lucro (%)</label>
-              <input type="number" id="in-margem" value="30" min="0" max="500" oninput="salvarERenderizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-emerald-700">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Impostos / Taxas (%)</label>
-              <input type="number" id="in-imposto" value="6" min="0" max="100" oninput="salvarERenderizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-            </div>
-          </div>
-          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-between text-xs">
-            <div><span class="text-slate-500 block">Custo Base Total:</span><strong id="res-custo" class="text-slate-700 text-sm">R$ 0,00</strong></div>
-            <div class="text-right"><span class="text-slate-500 block">Lucro Líquido Estimado:</span><strong id="res-lucro" class="text-emerald-600 text-sm">R$ 0,00</strong></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. Itens e Serviços (Com Edição) -->
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <div class="flex justify-between items-center border-b pb-2">
-          <h2 class="font-bold text-slate-700">3. Itens e Serviços</h2>
-          <span id="badge-editando" class="hidden text-[11px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">Editando item</span>
-        </div>
-        <div class="space-y-3">
-          <input type="text" id="item-desc" placeholder="Descrição do serviço ou material" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs text-slate-500 mb-1">Quantidade</label>
-              <input type="number" id="item-qtd" value="1" min="1" step="any" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-            </div>
-            <div>
-              <label id="label-valor-item" class="block text-xs text-slate-500 mb-1">Preço Unitário de Venda (R$)</label>
-              <input type="text" id="item-custo" inputmode="numeric" oninput="maskMoeda(this)" onkeyup="maskMoeda(this)" placeholder="R$ 0,00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-slate-800">
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <button type="button" id="btn-salvar-item" onclick="adicionarOuAtualizarItem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium text-sm py-2.5 rounded-lg transition">
-              + Adicionar Item ao Orçamento
-            </button>
-            <button type="button" id="btn-cancelar-edicao" onclick="cancelarEdicaoItem()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium text-xs px-4 py-2.5 rounded-lg transition">
-              Cancelar
-            </button>
-          </div>
-        </div>
-        <div id="lista-controle" class="divide-y divide-slate-100 text-xs max-h-56 overflow-y-auto"></div>
-      </div>
-
-      <!-- 4. Condições, Dados de Pagamento e Envio -->
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <h2 class="font-bold text-slate-700 border-b pb-2">4. Recebimento, Condições e Envio</h2>
-        
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Validade da Proposta</label>
-            <input type="text" id="in-validade" value="7 dias corridos" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Condição Comercial</label>
-            <input type="text" id="in-pagamento" value="50% entrada + 50% entrega" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          </div>
-        </div>
-
-        <!-- Seção de Dados Bancários / Chave Pix -->
-        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
-          <span class="text-xs font-bold text-slate-700 block">Dados para Recebimento (Exibido na Proposta)</span>
+        <!-- 4. Condições, Dados de Pagamento e Envio -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+          <h2 class="font-bold text-slate-700 border-b pb-2">4. Recebimento, Condições e Envio</h2>
           
-          <div>
-            <label class="block text-xs text-slate-600 mb-1">Meio de Pagamento</label>
-            <select id="in-meio-pag" onchange="alternarCamposPagamento()" class="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none">
-              <option value="pix">Pix</option>
-              <option value="transferencia">Transferência Bancária (TED / DOC)</option>
-              <option value="entre_contas">Transferência Entre Contas (Mesmo Banco)</option>
-              <option value="nenhum">Não exibir dados bancários no PDF</option>
-            </select>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Validade da Proposta</label>
+              <input type="text" id="in-validade" value="7 dias corridos" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Condição Comercial</label>
+              <input type="text" id="in-pagamento" value="50% entrada + 50% entrega" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
           </div>
 
-          <div id="campos-pix" class="grid grid-cols-12 gap-2">
-            <div class="col-span-5">
-              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tipo de Chave</label>
-              <select id="in-pix-tipo" onchange="salvarEAtualizar()" class="w-full border border-slate-300 bg-white rounded-lg px-2 py-2 text-xs">
-                <option value="CPF">CPF</option>
-                <option value="CNPJ">CNPJ</option>
-                <option value="Celular">Celular</option>
-                <option value="E-mail">E-mail</option>
-                <option value="Chave Aleatória">Chave Aleatória</option>
+          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+            <span class="text-xs font-bold text-slate-700 block">Dados para Recebimento (Exibido na Proposta)</span>
+            
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Meio de Pagamento</label>
+              <select id="in-meio-pag" onchange="alternarCamposPagamento()" class="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="pix">Pix</option>
+                <option value="transferencia">Transferência Bancária (TED / DOC)</option>
+                <option value="entre_contas">Transferência Entre Contas (Mesmo Banco)</option>
+                <option value="nenhum">Não exibir dados bancários no PDF</option>
               </select>
             </div>
-            <div class="col-span-7">
-              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Chave Pix</label>
-              <input type="text" id="in-pix-chave" oninput="salvarEAtualizar()" placeholder="Digite sua chave Pix" class="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-xs">
+
+            <div id="campos-pix" class="grid grid-cols-12 gap-2">
+              <div class="col-span-5">
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tipo de Chave</label>
+                <select id="in-pix-tipo" onchange="salvarEAtualizar()" class="w-full border border-slate-300 bg-white rounded-lg px-2 py-2 text-xs">
+                  <option value="CPF">CPF</option>
+                  <option value="CNPJ">CNPJ</option>
+                  <option value="Celular">Celular</option>
+                  <option value="E-mail">E-mail</option>
+                  <option value="Chave Aleatória">Chave Aleatória</option>
+                </select>
+              </div>
+              <div class="col-span-7">
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Chave Pix</label>
+                <input type="text" id="in-pix-chave" oninput="salvarEAtualizar()" placeholder="Digite sua chave Pix" class="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-xs">
+              </div>
+            </div>
+
+            <div id="campos-banco" class="hidden space-y-2">
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Banco</label>
+                  <input type="text" id="in-banco-nome" oninput="salvarEAtualizar()" placeholder="Ex: Nubank / Itaú" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Agência</label>
+                  <input type="text" id="in-banco-ag" oninput="salvarEAtualizar()" placeholder="0001" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Conta</label>
+                  <input type="text" id="in-banco-cc" oninput="salvarEAtualizar()" placeholder="12345-6" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
+                </div>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Titular / Favorecido</label>
+                <input type="text" id="in-banco-titular" oninput="salvarEAtualizar()" placeholder="Nome completo ou Razão Social" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
+              </div>
             </div>
           </div>
 
-          <div id="campos-banco" class="hidden space-y-2">
-            <div class="grid grid-cols-3 gap-2">
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Banco</label>
-                <input type="text" id="in-banco-nome" oninput="salvarEAtualizar()" placeholder="Ex: Nubank / Itaú" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
-              </div>
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Agência</label>
-                <input type="text" id="in-banco-ag" oninput="salvarEAtualizar()" placeholder="0001" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
-              </div>
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Conta</label>
-                <input type="text" id="in-banco-cc" oninput="salvarEAtualizar()" placeholder="12345-6" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
-              </div>
-            </div>
-            <div>
-              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Titular / Favorecido</label>
-              <input type="text" id="in-banco-titular" oninput="salvarEAtualizar()" placeholder="Nome completo ou Razão Social" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 text-xs">
-            </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Observações / Garantia</label>
+            <textarea id="in-obs" rows="2" oninput="salvarEAtualizar()" placeholder="Ex: Garantia de 90 dias sobre os serviços executados." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea>
           </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Observações / Garantia</label>
-          <textarea id="in-obs" rows="2" oninput="salvarEAtualizar()" placeholder="Ex: Garantia de 90 dias sobre os serviços executados." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea>
-        </div>
-        
-        <div class="space-y-2.5 pt-1">
-          <div class="grid grid-cols-2 gap-2.5">
-            <button onclick="salvarNaNuvem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 rounded-xl shadow transition text-xs sm:text-sm">
-              Salvar na Nuvem
+          
+          <div class="space-y-2.5 pt-1">
+            <div class="grid grid-cols-2 gap-2.5">
+              <button onclick="salvarNaNuvem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 rounded-xl shadow transition text-xs sm:text-sm">
+                Salvar na Nuvem
+              </button>
+              <button onclick="gerarPDF()" id="btn-gerar-pdf" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl shadow transition text-xs sm:text-sm">
+                Gerar PDF (A4)
+              </button>
+            </div>
+            <button onclick="enviarWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2">
+              <span>Enviar Proposta no WhatsApp</span>
+              <span id="badge-wpp-pro" class="bg-emerald-800 text-emerald-100 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">PRO</span>
             </button>
-            <button onclick="gerarPDF()" id="btn-gerar-pdf" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl shadow transition text-xs sm:text-sm">
-              Gerar PDF (A4)
+            <button onclick="copiarLinkAprovacao()" id="btn-link-aprovacao" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-semibold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1.5">
+              <span>🔗 Copiar Link de Aprovação Online</span>
+              <span id="badge-link-pro" class="bg-amber-200 text-amber-900 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">PRO</span>
             </button>
           </div>
-          <button onclick="enviarWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2">
-            <span>Enviar Proposta no WhatsApp</span>
-            <span id="badge-wpp-pro" class="bg-emerald-800 text-emerald-100 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">PRO</span>
-          </button>
-          <button onclick="copiarLinkAprovacao()" id="btn-link-aprovacao" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-semibold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1.5">
-            <span>🔗 Copiar Link de Aprovação Online</span>
-            <span id="badge-link-pro" class="bg-amber-200 text-amber-900 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">PRO</span>
-          </button>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Coluna Direita: Folha A4 -->
-    <section id="coluna-preview" class="lg:col-span-7">
-      <div class="mb-2 flex justify-between items-center no-print">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pré-visualização do Documento (A4)</span>
-        <span id="status-badge-doc" class="text-xs text-slate-400">Os custos internos ficam ocultos aqui</span>
-      </div>
-
-      <div id="area-impressao" class="relative overflow-hidden bg-white p-10 rounded-xl shadow-lg border border-slate-200 min-h-[840px] flex flex-col justify-between">
-        
-        <!-- MARCA D'ÁGUA DIAGONAL GRANDE (VISÍVEL APENAS NO PLANO GRATUITO) -->
-        <div id="marca-dagua-diagonal" class="pointer-events-none select-none absolute inset-0 flex flex-col items-center justify-center z-20 overflow-hidden">
-          <div class="-rotate-[34deg] text-center opacity-25">
-            <span class="block text-[72px] sm:text-[88px] font-black tracking-widest text-slate-500 uppercase leading-none border-y-4 border-slate-500 py-2 px-6">
-              DEMONSTRAÇÃO
-            </span>
-            <span class="block text-lg sm:text-xl font-extrabold tracking-widest text-slate-600 uppercase mt-2">
-              VERSÃO GRATUITA • ORÇAFÁCIL PRO
-            </span>
-          </div>
+      <!-- Coluna Direita: Folha A4 -->
+      <section id="coluna-preview" class="lg:col-span-7">
+        <div class="mb-2 flex justify-between items-center no-print">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pré-visualização do Documento (A4)</span>
+          <span id="status-badge-doc" class="text-xs text-slate-400">Os custos internos ficam ocultos aqui</span>
         </div>
 
-        <div class="relative z-10">
-          <!-- Selo de Aprovado Online -->
-          <div id="selo-aprovado-online" class="hidden mb-6 bg-emerald-50 border-2 border-emerald-500 rounded-xl p-3 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-              <span class="bg-emerald-600 text-white text-xs font-black px-2.5 py-1 rounded uppercase">✓ Aprovado Online</span>
-              <span id="texto-aprovado-detalhes" class="text-xs text-emerald-900 font-medium"></span>
+        <div id="area-impressao" class="relative overflow-hidden bg-white p-10 rounded-xl shadow-lg border border-slate-200 min-h-[840px] flex flex-col justify-between">
+          
+          <!-- MARCA D'ÁGUA DIAGONAL GRANDE (VISÍVEL APENAS NO PLANO GRATUITO) -->
+          <div id="marca-dagua-diagonal" class="pointer-events-none select-none absolute inset-0 flex flex-col items-center justify-center z-20 overflow-hidden">
+            <div class="-rotate-[34deg] text-center opacity-25">
+              <span class="block text-[72px] sm:text-[88px] font-black tracking-widest text-slate-500 uppercase leading-none border-y-4 border-slate-500 py-2 px-6">
+                DEMONSTRAÇÃO
+              </span>
+              <span class="block text-lg sm:text-xl font-extrabold tracking-widest text-slate-600 uppercase mt-2">
+                VERSÃO GRATUITA • ORÇAFÁCIL PRO
+              </span>
             </div>
           </div>
 
-          <div class="flex justify-between items-start border-b-2 border-slate-800 pb-6 gap-4">
-            <div class="flex items-center gap-4">
-              <img id="out-logo" src="" alt="Logo" class="hidden h-16 w-auto object-contain rounded">
+          <div class="relative z-10">
+            <!-- Selo de Aprovado Online -->
+            <div id="selo-aprovado-online" class="hidden mb-6 bg-emerald-50 border-2 border-emerald-500 rounded-xl p-3 flex justify-between items-center">
+              <div class="flex items-center gap-2">
+                <span class="bg-emerald-600 text-white text-xs font-black px-2.5 py-1 rounded uppercase">✓ Aprovado Online</span>
+                <span id="texto-aprovado-detalhes" class="text-xs text-emerald-900 font-medium"></span>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-start border-b-2 border-slate-800 pb-6 gap-4">
+              <div class="flex items-center gap-4">
+                <img id="out-logo" src="" alt="Logo" class="hidden h-16 w-auto object-contain rounded">
+                <div>
+                  <h2 id="out-empresa" class="text-2xl font-extrabold text-slate-900">Sua Empresa / Profissional</h2>
+                  <p id="out-contato" class="text-sm text-slate-600 mt-1">Contato: (00) 00000-0000</p>
+                  <p id="out-doc" class="text-xs text-slate-500"></p>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <span class="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">Proposta <span id="out-num">#0001/2026</span></span>
+                <p class="text-xs text-slate-500 mt-2">Data: <span id="out-data"></span></p>
+                <p class="text-xs text-slate-500">Validade: <span id="out-validade">7 dias corridos</span></p>
+              </div>
+            </div>
+
+            <div class="my-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <span class="text-[11px] font-bold uppercase text-slate-400 block">Preparado para:</span>
+              <p id="out-cliente" class="text-base font-bold text-slate-800">Nome do Cliente</p>
+            </div>
+
+            <table class="w-full text-left border-collapse mt-4">
+              <thead>
+                <tr class="border-b-2 border-slate-300 text-xs uppercase text-slate-500">
+                  <th class="py-3">Descrição do Serviço / Item</th>
+                  <th class="py-3 text-center w-20">Qtd</th>
+                  <th class="py-3 text-right w-32">Valor Unit.</th>
+                  <th class="py-3 text-right w-32">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-pdf" class="divide-y divide-slate-200 text-sm">
+                <tr><td colspan="4" class="py-8 text-center text-slate-400 italic">Adicione itens ao lado para visualizar o orçamento...</td></tr>
+              </tbody>
+            </table>
+
+            <div class="mt-6 flex justify-end">
+              <div class="w-64 bg-slate-900 text-white p-4 rounded-lg">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs uppercase text-slate-300">Investimento Total</span>
+                  <span id="out-total" class="text-xl font-extrabold text-emerald-400">R$ 0,00</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-8 border-t pt-6 space-y-4 text-sm text-slate-700">
               <div>
-                <h2 id="out-empresa" class="text-2xl font-extrabold text-slate-900">Sua Empresa / Profissional</h2>
-                <p id="out-contato" class="text-sm text-slate-600 mt-1">Contato: (00) 00000-0000</p>
-                <p id="out-doc" class="text-xs text-slate-500"></p>
+                <strong class="text-slate-900">Condições de Pagamento:</strong>
+                <span id="out-pagamento">50% entrada + 50% entrega</span>
               </div>
-            </div>
-            <div class="text-right shrink-0">
-              <span class="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">Proposta <span id="out-num">#0001/2026</span></span>
-              <p class="text-xs text-slate-500 mt-2">Data: <span id="out-data"></span></p>
-              <p class="text-xs text-slate-500">Validade: <span id="out-validade">7 dias corridos</span></p>
-            </div>
-          </div>
 
-          <div class="my-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
-            <span class="text-[11px] font-bold uppercase text-slate-400 block">Preparado para:</span>
-            <p id="out-cliente" class="text-base font-bold text-slate-800">Nome do Cliente</p>
-          </div>
+              <div id="box-dados-pagamento-pdf" class="hidden bg-slate-50 border border-slate-200 rounded-lg p-3.5 text-xs space-y-1">
+                <strong id="out-titulo-pagamento" class="text-slate-900 uppercase tracking-wider block text-[11px]">Dados para Pagamento via Pix:</strong>
+                <p id="out-detalhe-pagamento" class="text-slate-700 font-medium"></p>
+              </div>
 
-          <table class="w-full text-left border-collapse mt-4">
-            <thead>
-              <tr class="border-b-2 border-slate-300 text-xs uppercase text-slate-500">
-                <th class="py-3">Descrição do Serviço / Item</th>
-                <th class="py-3 text-center w-20">Qtd</th>
-                <th class="py-3 text-right w-32">Valor Unit.</th>
-                <th class="py-3 text-right w-32">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody id="tabela-pdf" class="divide-y divide-slate-200 text-sm">
-              <tr><td colspan="4" class="py-8 text-center text-slate-400 italic">Adicione itens ao lado para visualizar o orçamento...</td></tr>
-            </tbody>
-          </table>
-
-          <div class="mt-6 flex justify-end">
-            <div class="w-64 bg-slate-900 text-white p-4 rounded-lg">
-              <div class="flex justify-between items-center">
-                <span class="text-xs uppercase text-slate-300">Investimento Total</span>
-                <span id="out-total" class="text-xl font-extrabold text-emerald-400">R$ 0,00</span>
+              <div id="box-obs" class="hidden">
+                <strong class="text-slate-900">Observações e Garantia:</strong>
+                <p id="out-obs" class="text-slate-600 mt-1"></p>
               </div>
             </div>
           </div>
 
-          <!-- Condições e Dados Bancários / Pix -->
-          <div class="mt-8 border-t pt-6 space-y-4 text-sm text-slate-700">
-            <div>
-              <strong class="text-slate-900">Condições de Pagamento:</strong>
-              <span id="out-pagamento">50% entrada + 50% entrega</span>
-            </div>
-
-            <div id="box-dados-pagamento-pdf" class="hidden bg-slate-50 border border-slate-200 rounded-lg p-3.5 text-xs space-y-1">
-              <strong id="out-titulo-pagamento" class="text-slate-900 uppercase tracking-wider block text-[11px]">Dados para Pagamento via Pix:</strong>
-              <p id="out-detalhe-pagamento" class="text-slate-700 font-medium"></p>
-            </div>
-
-            <div id="box-obs" class="hidden">
-              <strong class="text-slate-900">Observações e Garantia:</strong>
-              <p id="out-obs" class="text-slate-600 mt-1"></p>
-            </div>
+          <div class="relative z-10 mt-12 pt-6 border-t border-slate-200 text-center">
+            <div class="w-48 border-t border-slate-400 mx-auto mb-1"></div>
+            <p class="text-xs text-slate-500">Assinatura / Aprovação do Cliente</p>
+            <p id="marca-dagua" class="text-[11px] text-slate-400 mt-6">Documento de demonstração gerado gratuitamente via <strong>OrçaFácil Pro</strong></p>
           </div>
         </div>
-
-        <div class="relative z-10 mt-12 pt-6 border-t border-slate-200 text-center">
-          <div class="w-48 border-t border-slate-400 mx-auto mb-1"></div>
-          <p class="text-xs text-slate-500">Assinatura / Aprovação do Cliente</p>
-          <p id="marca-dagua" class="text-[11px] text-slate-400 mt-6">Documento de demonstração gerado gratuitamente via <strong>OrçaFácil Pro</strong></p>
-        </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
+  </div>
 
   <!-- Modal 1: ENTRAR (Login) -->
   <div id="modal-login" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
@@ -771,9 +773,12 @@
 
     async function carregarModoPublicoCliente(id) {
       propostaPublicaId = id;
+      const mainEl = document.getElementById('conteudo-principal');
+      mainEl.removeAttribute('inert');
+      mainEl.classList.remove('select-none');
+
       document.getElementById('barra-topo').classList.add('hidden');
       document.getElementById('tela-bloqueio-visitante').classList.add('hidden');
-      document.getElementById('conteudo-principal').classList.remove('hidden');
       document.getElementById('coluna-controles').classList.add('hidden');
       document.getElementById('coluna-preview').classList.replace('lg:col-span-7', 'lg:col-span-12');
       document.getElementById('coluna-preview').classList.add('max-w-4xl', 'mx-auto', 'w-full');
@@ -848,8 +853,11 @@
 
     async function configurarUsuarioLogado(user) {
       currentUser = user;
+      const mainEl = document.getElementById('conteudo-principal');
+      mainEl.removeAttribute('inert');
+      mainEl.classList.remove('select-none');
+
       document.getElementById('tela-bloqueio-visitante').classList.add('hidden');
-      document.getElementById('conteudo-principal').classList.remove('hidden');
       document.getElementById('area-deslogado').classList.add('hidden');
       document.getElementById('area-logado').classList.remove('hidden');
       document.getElementById('btn-historico').classList.remove('hidden');
@@ -864,7 +872,6 @@
         const anoAtual = extrairAnoDoCampoNumero();
         document.getElementById('in-num').value = formatarNumeroSequencial(ultimoNumeroSalvo + 1, anoAtual);
 
-        // Se o campo de contato do orçamento estiver vazio, preenche com o telefone do cadastro
         if (profile.telefone && !document.getElementById('in-contato').value) {
           const elTel = document.getElementById('in-contato');
           elTel.value = profile.telefone;
@@ -883,7 +890,10 @@
 
     function configurarUsuarioDeslogado() {
       currentUser = null; isPro = false; ultimoNumeroSalvo = 0; pdfsGeradosUsuario = 0;
-      document.getElementById('conteudo-principal').classList.add('hidden');
+      const mainEl = document.getElementById('conteudo-principal');
+      mainEl.setAttribute('inert', '');
+      mainEl.classList.add('select-none');
+
       document.getElementById('tela-bloqueio-visitante').classList.remove('hidden');
       document.getElementById('area-deslogado').classList.remove('hidden');
       document.getElementById('area-logado').classList.add('hidden');
