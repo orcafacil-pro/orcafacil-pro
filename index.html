@@ -17,6 +17,44 @@
       .no-print { display: none !important; }
     }
   </style>
+  <script>
+    // Funções de máscara carregadas no HEAD antes da página renderizar
+    function maskTel(el) {
+      let n = el.value.replace(/\D/g, '').substring(0, 11);
+      if (n.length > 10) {
+        el.value = n.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+      } else if (n.length > 6) {
+        el.value = n.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+      } else if (n.length > 2) {
+        el.value = n.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+      } else if (n.length > 0) {
+        el.value = n.replace(/^(\d*)/, '($1');
+      } else {
+        el.value = '';
+      }
+      if (typeof salvarEAtualizar === 'function') salvarEAtualizar();
+    }
+
+    function maskDoc(el) {
+      let n = el.value.replace(/\D/g, '').substring(0, 14);
+      if (n.length <= 11) {
+        // CPF: 000.000.000-00
+        if (n.length > 9) {
+          el.value = n.replace(/^(\d{3})(\d{3})(\d{3})(\d{1,2}).*/, '$1.$2.$3-$4');
+        } else if (n.length > 6) {
+          el.value = n.replace(/^(\d{3})(\d{3})(\d{1,3}).*/, '$1.$2.$3');
+        } else if (n.length > 3) {
+          el.value = n.replace(/^(\d{3})(\d{1,3}).*/, '$1.$2');
+        } else {
+          el.value = n;
+        }
+      } else {
+        // CNPJ: 00.000.000/0000-00
+        el.value = n.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2}).*/, '$1.$2.$3/$4-$5');
+      }
+      if (typeof salvarEAtualizar === 'function') salvarEAtualizar();
+    }
+  </script>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans">
 
@@ -85,11 +123,11 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">Seu WhatsApp / Contato</label>
-              <input type="text" id="in-contato" inputmode="numeric" placeholder="(00) 00000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+              <input type="text" id="in-contato" oninput="maskTel(this)" onkeyup="maskTel(this)" placeholder="(00) 00000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">CNPJ / CPF (Opcional)</label>
-              <input type="text" id="in-doc" inputmode="numeric" placeholder="00.000.000/0000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+              <input type="text" id="in-doc" oninput="maskDoc(this)" onkeyup="maskDoc(this)" placeholder="00.000.000/0000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
             </div>
           </div>
           <div class="grid grid-cols-3 gap-3">
@@ -124,232 +162,4 @@
         <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-between text-xs">
           <div>
             <span class="text-slate-500 block">Custo Base Total:</span>
-            <strong id="res-custo" class="text-slate-700 text-sm">R$ 0,00</strong>
-          </div>
-          <div class="text-right">
-            <span class="text-slate-500 block">Lucro Líquido Estimado:</span>
-            <strong id="res-lucro" class="text-emerald-600 text-sm">R$ 0,00</strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- Adicionar Itens -->
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <h2 class="font-bold text-slate-700 border-b pb-2">3. Itens e Serviços</h2>
-        <div class="space-y-3">
-          <input type="text" id="item-desc" placeholder="Descrição do serviço ou material" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs text-slate-500 mb-1">Quantidade</label>
-              <input type="number" id="item-qtd" value="1" min="1" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 mb-1">Seu Custo Unitário (R$)</label>
-              <input type="number" id="item-custo" placeholder="150.00" step="0.01" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-            </div>
-          </div>
-          <button onclick="adicionarItem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium text-sm py-2.5 rounded-lg transition">
-            + Adicionar Item ao Orçamento
-          </button>
-        </div>
-
-        <div id="lista-controle" class="divide-y divide-slate-100 text-xs max-h-48 overflow-y-auto"></div>
-      </div>
-
-      <!-- Condições e Botões de Ação -->
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <h2 class="font-bold text-slate-700 border-b pb-2">4. Condições Comerciais</h2>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Validade da Proposta</label>
-            <input type="text" id="in-validade" value="7 dias corridos" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Forma de Pagamento</label>
-            <input type="text" id="in-pagamento" value="50% entrada + 50% entrega" oninput="salvarEAtualizar()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Observações / Garantia</label>
-          <textarea id="in-obs" rows="2" oninput="salvarEAtualizar()" placeholder="Ex: Garantia de 90 dias sobre os serviços executados." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button onclick="salvarNaNuvem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 rounded-xl shadow transition text-sm">
-            Salvar na Nuvem
-          </button>
-          <button onclick="gerarPDF()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md transition text-sm">
-            Gerar PDF
-          </button>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- Coluna Direita: Visualização da Folha A4 -->
-    <section class="lg:col-span-7">
-      <div class="mb-2 flex justify-between items-center no-print">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pré-visualização do Documento (A4)</span>
-        <span class="text-xs text-slate-400">Os custos internos ficam ocultos aqui</span>
-      </div>
-
-      <div id="area-impressao" class="bg-white p-10 rounded-xl shadow-lg border border-slate-200 min-h-[840px] flex flex-col justify-between">
-        <div>
-          <!-- Cabeçalho do Orçamento -->
-          <div class="flex justify-between items-start border-b-2 border-slate-800 pb-6 gap-4">
-            <div class="flex items-center gap-4">
-              <img id="out-logo" src="" alt="Logo" class="hidden h-16 w-auto object-contain rounded">
-              <div>
-                <h2 id="out-empresa" class="text-2xl font-extrabold text-slate-900">Sua Empresa / Profissional</h2>
-                <p id="out-contato" class="text-sm text-slate-600 mt-1">Contato: (00) 00000-0000</p>
-                <p id="out-doc" class="text-xs text-slate-500"></p>
-              </div>
-            </div>
-            <div class="text-right shrink-0">
-              <span class="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">Proposta <span id="out-num">#001</span></span>
-              <p class="text-xs text-slate-500 mt-2">Data: <span id="out-data"></span></p>
-              <p class="text-xs text-slate-500">Validade: <span id="out-validade">7 dias corridos</span></p>
-            </div>
-          </div>
-
-          <!-- Dados do Cliente -->
-          <div class="my-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
-            <span class="text-[11px] font-bold uppercase text-slate-400 block">Preparado para:</span>
-            <p id="out-cliente" class="text-base font-bold text-slate-800">Nome do Cliente</p>
-          </div>
-
-          <!-- Tabela de Itens -->
-          <table class="w-full text-left border-collapse mt-4">
-            <thead>
-              <tr class="border-b-2 border-slate-300 text-xs uppercase text-slate-500">
-                <th class="py-3">Descrição do Serviço / Item</th>
-                <th class="py-3 text-center w-20">Qtd</th>
-                <th class="py-3 text-right w-32">Valor Unit.</th>
-                <th class="py-3 text-right w-32">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody id="tabela-pdf" class="divide-y divide-slate-200 text-sm">
-              <tr>
-                <td colspan="4" class="py-8 text-center text-slate-400 italic">Adicione itens ao lado para visualizar o orçamento...</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Total -->
-          <div class="mt-6 flex justify-end">
-            <div class="w-64 bg-slate-900 text-white p-4 rounded-lg">
-              <div class="flex justify-between items-center">
-                <span class="text-xs uppercase text-slate-300">Investimento Total</span>
-                <span id="out-total" class="text-xl font-extrabold text-emerald-400">R$ 0,00</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Condições -->
-          <div class="mt-8 space-y-3 text-sm text-slate-700 border-t pt-6">
-            <div>
-              <strong class="text-slate-900">Condições de Pagamento:</strong>
-              <span id="out-pagamento">50% entrada + 50% entrega</span>
-            </div>
-            <div id="box-obs" class="hidden">
-              <strong class="text-slate-900">Observações e Garantia:</strong>
-              <p id="out-obs" class="text-slate-600 mt-1"></p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Rodapé e Marca d'Água Freemium -->
-        <div class="mt-12 pt-6 border-t border-slate-200 text-center">
-          <div class="w-48 border-t border-slate-400 mx-auto mb-1"></div>
-          <p class="text-xs text-slate-500">Assinatura / Aprovação do Cliente</p>
-          <p id="marca-dagua" class="text-[11px] text-slate-400 mt-6">
-            Documento gerado gratuitamente via <strong>OrçaFácil Pro</strong>
-          </p>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Modal Login / Cadastro -->
-  <div id="modal-auth" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg font-bold text-slate-900">Sua Conta na Nuvem</h3>
-        <button onclick="fecharModalAuth()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
-      </div>
-      <p class="text-xs text-slate-500">Entre ou crie sua conta gratuita para salvar seus orçamentos e acessar de qualquer dispositivo.</p>
-      <div class="space-y-3">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Seu E-mail</label>
-          <input type="email" id="auth-email" placeholder="seu@email.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Sua Senha (mín. 6 caracteres)</label>
-          <input type="password" id="auth-senha" placeholder="******" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-        </div>
-        <div class="grid grid-cols-2 gap-2 pt-2">
-          <button onclick="fazerLogin()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 rounded-lg text-sm transition">
-            Entrar
-          </button>
-          <button onclick="fazerCadastro()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg text-sm transition">
-            Criar Conta
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Histórico de Orçamentos -->
-  <div id="modal-historico" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
-    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[80vh] flex flex-col">
-      <div class="flex justify-between items-center border-b pb-3">
-        <div>
-          <h3 class="text-lg font-bold text-slate-900">Meus Orçamentos Salvos</h3>
-          <p class="text-[11px] text-slate-500">Excluir um orçamento não afeta a numeração sequencial dos próximos.</p>
-        </div>
-        <button onclick="fecharHistorico()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
-      </div>
-      <div id="lista-historico-nuvem" class="overflow-y-auto divide-y divide-slate-100 flex-1 text-sm">
-        <p class="text-center text-slate-400 py-8">Carregando orçamentos...</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Excluir Conta -->
-  <div id="modal-excluir-conta" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border-2 border-red-100">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg font-bold text-red-600">Excluir Minha Conta</h3>
-        <button onclick="fecharModalExcluirConta()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
-      </div>
-      <p class="text-sm text-slate-600">
-        Tem certeza que deseja excluir permanentemente sua conta e todos os seus orçamentos salvos? <strong>Esta ação não pode ser desfeita.</strong>
-      </p>
-      <div class="bg-red-50 border border-red-200 p-3 rounded-lg text-xs text-red-800">
-        Para confirmar, digite <strong>EXCLUIR</strong> no campo abaixo:
-      </div>
-      <input type="text" id="confirmacao-excluir" placeholder="Digite EXCLUIR" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm uppercase">
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="fecharModalExcluirConta()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-4 py-2 rounded-lg text-sm">
-          Cancelar
-        </button>
-        <button onclick="executarExclusaoConta()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg text-sm">
-          Confirmar Exclusão
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Versão PRO -->
-  <div id="modal-pro" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center p-4 z-50 no-print">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg font-bold text-slate-900">Ativar OrçaFácil PRO</h3>
-        <button onclick="fecharModalPro()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
-      </div>
-      <ul class="text-sm text-slate-600 space-y-2">
-        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Adicione o <strong>Logotipo da sua empresa</strong> no topo</li>
-        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Remova completamente a marca d'água do rodapé</li>
-        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Orçamentos ilimitados salvos na sua conta</li>
-      </ul>
-      <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-sm text
+            <strong id="
