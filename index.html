@@ -47,7 +47,7 @@
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex justify-between items-center border-b pb-2">
           <h2 class="font-bold text-slate-700">1. Identificação</h2>
-          <span class="text-[11px] text-emerald-600 font-medium">Salvo automaticamente</span>
+          <span id="status-cnpj" class="text-[11px] text-emerald-600 font-medium">Salvo automaticamente</span>
         </div>
         <div class="bg-slate-50 p-3 rounded-lg border border-dashed border-slate-300">
           <div class="flex justify-between items-center mb-1">
@@ -58,19 +58,19 @@
           <button id="btn-remover-logo" onclick="removerLogo()" class="hidden text-[11px] text-red-500 underline mt-1">Remover logotipo</button>
         </div>
         <div class="grid grid-cols-1 gap-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">CNPJ / CPF <span class="text-emerald-600 font-normal">(Busca CNPJ)</span></label>
+              <input type="text" id="in-doc" inputmode="numeric" oninput="maskDoc(this)" onkeyup="maskDoc(this)" placeholder="00.000.000/0000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Seu WhatsApp / Contato</label>
+              <input type="text" id="in-contato" inputmode="numeric" oninput="maskTel(this)" onkeyup="maskTel(this)" placeholder="(00) 00000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Sua Empresa / Seu Nome Profissional</label>
             <input type="text" id="in-empresa" oninput="salvarEAtualizar()" placeholder="Ex: Silva Climatização & Elétrica" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Seu WhatsApp / Contato</label>
-              <input type="text" id="in-contato" oninput="maskTel(this)" onkeyup="maskTel(this)" placeholder="(00) 00000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">CNPJ / CPF (Opcional)</label>
-              <input type="text" id="in-doc" oninput="maskDoc(this)" onkeyup="maskDoc(this)" placeholder="00.000.000/0000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
-            </div>
           </div>
           <div class="grid grid-cols-3 gap-3">
             <div class="col-span-2">
@@ -112,7 +112,7 @@
           <input type="text" id="item-desc" placeholder="Descrição do serviço ou material" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
           <div class="grid grid-cols-2 gap-3">
             <div><label class="block text-xs text-slate-500 mb-1">Quantidade</label><input type="number" id="item-qtd" value="1" min="1" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
-            <div><label class="block text-xs text-slate-500 mb-1">Seu Custo Unitário (R$)</label><input type="number" id="item-custo" placeholder="150.00" step="0.01" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
+            <div><label class="block text-xs text-slate-500 mb-1">Seu Custo Unitário (R$)</label><input type="text" id="item-custo" inputmode="numeric" oninput="maskMoeda(this)" onkeyup="maskMoeda(this)" placeholder="R$ 0,00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-slate-800"></div>
           </div>
           <button onclick="adicionarItem()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium text-sm py-2.5 rounded-lg transition">+ Adicionar Item ao Orçamento</button>
         </div>
@@ -267,6 +267,8 @@
   </div>
 
   <script>
+    let ultimoCnpjBuscado = '';
+
     function maskTel(el) {
       let n = el.value.replace(/\D/g, '').substring(0, 11);
       if (n.length > 10) el.value = n.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
@@ -286,8 +288,55 @@
         else el.value = n;
       } else {
         el.value = n.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2}).*/, '$1.$2.$3/$4-$5');
+        if (n.length === 14 && n !== ultimoCnpjBuscado) {
+          ultimoCnpjBuscado = n;
+          buscarDadosCNPJ(n);
+        }
       }
       salvarEAtualizar();
+    }
+
+    async function buscarDadosCNPJ(cnpjLimpo) {
+      const status = document.getElementById('status-cnpj');
+      status.innerText = 'Buscando dados do CNPJ...';
+      status.classList.replace('text-emerald-600', 'text-amber-600');
+      try {
+        const resp = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
+        if (!resp.ok) throw new Error('Não encontrado');
+        const dados = await resp.json();
+        const nomeEmpresa = (dados.nome_fantasia && dados.nome_fantasia.trim()) ? dados.nome_fantasia : dados.razao_social;
+        if (nomeEmpresa) {
+          document.getElementById('in-empresa').value = nomeEmpresa;
+        }
+        if (dados.ddd_telefone_1) {
+          const elTel = document.getElementById('in-contato');
+          elTel.value = dados.ddd_telefone_1;
+          maskTel(elTel);
+        }
+        salvarEAtualizar();
+        status.innerText = 'Dados preenchidos via Receita!';
+        status.classList.replace('text-amber-600', 'text-emerald-600');
+      } catch (e) {
+        status.innerText = 'Salvo automaticamente';
+        status.classList.replace('text-amber-600', 'text-emerald-600');
+      }
+    }
+
+    function maskMoeda(el) {
+      let n = el.value.replace(/\D/g, '');
+      if (!n) {
+        el.value = '';
+        return;
+      }
+      let valor = parseInt(n, 10) / 100;
+      el.value = valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function lerValorMoeda(texto) {
+      if (!texto) return 0;
+      let limpo = texto.replace(/\D/g, '');
+      if (!limpo) return 0;
+      return parseInt(limpo, 10) / 100;
     }
 
     const SUPABASE_URL = 'https://qnswdcfjracnvwzpyuqd.supabase.co';
@@ -403,7 +452,9 @@
       if (!dados) return;
       document.getElementById('in-empresa').value = dados.empresa || '';
       const elTel = document.getElementById('in-contato'); elTel.value = dados.contato || ''; maskTel(elTel);
-      const elDoc = document.getElementById('in-doc'); elDoc.value = dados.doc || ''; maskDoc(elDoc);
+      const elDoc = document.getElementById('in-doc');
+      ultimoCnpjBuscado = (dados.doc || '').replace(/\D/g, '');
+      elDoc.value = dados.doc || ''; maskDoc(elDoc);
       document.getElementById('in-cliente').value = dados.cliente || '';
       document.getElementById('in-num').value = dados.numero || '#001';
       document.getElementById('in-margem').value = dados.margem || 30;
@@ -421,7 +472,9 @@
       ['in-empresa', 'in-contato', 'in-doc', 'in-margem', 'in-imposto', 'in-validade', 'in-pagamento', 'in-obs'].forEach(id => {
         const salvo = localStorage.getItem('orcafacil_' + id);
         if (salvo !== null) {
-          const el = document.getElementById(id); el.value = salvo;
+          const el = document.getElementById(id);
+          if (id === 'in-doc') ultimoCnpjBuscado = salvo.replace(/\D/g, '');
+          el.value = salvo;
           if (id === 'in-contato') maskTel(el);
           if (id === 'in-doc') maskDoc(el);
         }
@@ -478,10 +531,13 @@
     }
 
     function adicionarItem() {
-      const desc = document.getElementById('item-desc').value.trim(), qtd = parseFloat(document.getElementById('item-qtd').value) || 1, custo = parseFloat(document.getElementById('item-custo').value) || 0;
+      const desc = document.getElementById('item-desc').value.trim();
+      const qtd = parseFloat(document.getElementById('item-qtd').value) || 1;
+      const custo = lerValorMoeda(document.getElementById('item-custo').value);
       if (!desc || custo <= 0) return alert('Preencha a descrição e um custo válido maior que zero.');
       itens.push({ id: Date.now(), desc, qtd, custo });
-      document.getElementById('item-desc').value = ''; document.getElementById('item-custo').value = '';
+      document.getElementById('item-desc').value = '';
+      document.getElementById('item-custo').value = '';
       renderizarItens();
     }
 
